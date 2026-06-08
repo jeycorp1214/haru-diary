@@ -41,6 +41,7 @@ export default function NewEntryScreen() {
       <Stack.Screen
         options={{
           title: t('entry.new'),
+          headerShown: true,
           presentation: 'modal',
           headerRight: () => (
             <Pressable disabled={!canSave} onPress={() => save.mutate()}>

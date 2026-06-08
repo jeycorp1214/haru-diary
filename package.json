@@ -81,5 +81,10 @@
   "jest": {
     "preset": "jest-expo"
   },
+  "expo": {
+    "autolinking": {
+      "exclude": ["@react-native-voice/voice"]
+    }
+  },
   "private": true
 }

@@ -47,6 +47,7 @@ export default function EntryDetailScreen() {
       <Stack.Screen
         options={{
           title: dayjs(entry.entryDate).format('YYYY.MM.DD'),
+          headerShown: true,
           headerRight: () => (
             <Pressable onPress={confirmDelete}>
               <Text style={styles.delete}>{t('entry.delete')}</Text>
