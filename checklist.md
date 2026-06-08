@@ -53,7 +53,7 @@
 - [x] 감정 통계 그래프 (victory-native) — 감정 분포 막대 + 범례
 
 ## Phase 3 — 리텐션
-- [ ] 스트릭 (`queries/stats.streak` + MMKV 캐시)
+- [x] 연속 작성 스트릭 (currentStreak, 통계 카드). MMKV 캐시는 생략(라이브 계산)
 - [ ] 리마인더 알림 (expo-notifications)
 - [ ] JSON 내보내기/가져오기
 - [ ] 클라우드 백업 (D-5 결정)
