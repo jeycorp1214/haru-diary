@@ -34,7 +34,12 @@
             "imageWidth": 76
           }
         }
-      ]
+      ],
+      "expo-sqlite",
+      "expo-secure-store",
+      "expo-sharing",
+      "@react-native-voice/voice",
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true,
