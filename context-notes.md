@@ -111,5 +111,14 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
   3. **에러 분기 구분 안 됨** — 현재 mic_permission_denied / speech_start_failed / onSpeechError 모두 같은 UI 메시지. 임시로 raw 에러문자열을 화면에 노출해 어느 분기인지 먼저 특정할 것.
 - **검증 순서** — (a) 화면에 raw error 노출 → 분기 특정 (b) NativeModules.Voice 등록 여부 (c) 그 다음 권한/queries.
 
+## 2026-06-09 — 설정 확장: 화면 잠금 + 글자 스타일
+
+- **글꼴체 = 한글 Google Fonts 설치** — NanumGothic/NanumMyeongjo/Gaegu(손글씨). 시스템 폰트는 iOS 한글 서체 폴백 불안정 + 프리뷰 차이 작아 비채택. `@expo-google-fonts/*`는 순수 JS TTF 자산 → `useFonts`로 런타임 로드, **네이티브 재빌드 불필요**(dev metro 리로드로 적용). `lib/fonts.ts`에 FONT_ASSETS/FONT_FAMILY/FONT_KEYS/FONT_SCALES 집약.
+- **폰트 로드 게이트** — `_layout.tsx` `useFonts(FONT_ASSETS)` → 마이그레이션 게이트와 `!success || !fontsLoaded`로 통합.
+- **글자 스타일 적용 범위 = 상세 본문만** — `entry/[id].tsx` body Text에 fontSize·lineHeight×fontScale + FONT_FAMILY[key]. **tentap 에디터(작성)는 webview라 RN 폰트 적용 불가 → 제외**(읽기면만). 피드는 미적용(스코프).
+- **fontScale는 원래 죽은 값**이었음(스토어에만 있고 소비처 0). 이번에 상세 본문에 배선.
+- **화면 잠금 UI** — 기존 인프라(secureStorage savePIN/hasPIN/deletePIN, useLockStore, useBiometrics) 재사용. PIN 설정은 `app/pin-setup.tsx` 모달(4자리 입력→확인 재입력 일치 시 savePIN). 설정탭은 `useFocusEffect`로 복귀 시 hasPIN 재확인. 생체 토글은 PIN 설정+생체 가용 시만 노출, PIN 삭제 시 생체도 off. 자동잠금 0(즉시)/1/5/10분.
+- **PIN 변경 주의(E2E와 연계)** — savePIN 재호출 시 [[2026-06-09 — Phase 4 E2E 암호화]] 암호키 재파생됨. 현재 잠금 끄기=deletePIN→재설정 경로뿐이라 암호 store 데이터는 어차피 폐기. 별도 "PIN 변경" 플로우 추가 시 재암호화 필요(기존 메모 유효).
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

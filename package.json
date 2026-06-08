@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "dependencies": {
     "@10play/tentap-editor": "^1.0.1",
+    "@expo-google-fonts/gaegu": "^0.4.1",
+    "@expo-google-fonts/nanum-gothic": "^0.4.0",
+    "@expo-google-fonts/nanum-myeongjo": "^0.4.1",
     "@expo/ui": "~56.0.16",
     "@expo/vector-icons": "^15.0.2",
     "@noble/ciphers": "^2.2.0",

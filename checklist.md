@@ -71,6 +71,12 @@
   - [x] 네이티브 빌드 성공(BUILD SUCCESSFUL, voice 컴파일·APK 설치 SM_S928N)
   - [x] 런타임 동작 확인(실기기 음성 인식 성공). 모듈명 불일치(RCTVoice vs Voice) JS 패치로 해결
 - [ ] 홈 위젯 — 보류(사용자 결정)
+
+## 추가 기능 (설계 외 요청)
+
+- [x] 설정: 화면 잠금 — PIN 설정/해제(pin-setup 모달) + 생체 토글 + 자동잠금 시간
+- [x] 설정: 글자 스타일 — 크기 4단계 + 글꼴 4종(기본/고딕/명조/손글씨, 한글 Google Fonts) + 라이브 프리뷰. 상세 본문에 적용
+  - [ ] 실기기 육안 검증(폰트 렌더·잠금 플로우) — metro 리로드로 확인 필요(네이티브 재빌드 불필요)
 - [x] E2E 암호화 (PIN 파생키 MMKV)
   - [x] secureStorage: PIN에서 별도 salt로 암호키 파생 → SecureStore 영속 (auth 해시와 분리)
   - [x] secureMmkv: PIN 파생키로 암호화 MMKV(`secure`) 인스턴스 lifecycle (unlock/get/lock)

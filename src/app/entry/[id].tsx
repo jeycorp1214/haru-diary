@@ -7,12 +7,16 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { deleteEntry, getEntry } from '@/db/queries/entries';
+import { FONT_FAMILY } from '@/lib/fonts';
 import { queryClient } from '@/lib/query';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 
 export default function EntryDetailScreen() {
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const fontScale = useSettingsStore((s) => s.fontScale);
+  const fontFamily = useSettingsStore((s) => s.fontFamily);
 
   const { data: entry, isLoading } = useQuery({
     queryKey: ['entry', id],
@@ -73,7 +77,17 @@ export default function EntryDetailScreen() {
               .join(' · ')}
           </Text>
         )}
-        <Text style={styles.body}>{entry.contentText}</Text>
+        <Text
+          style={[
+            styles.body,
+            {
+              fontSize: 16 * fontScale,
+              lineHeight: 26 * fontScale,
+              fontFamily: FONT_FAMILY[fontFamily],
+            },
+          ]}>
+          {entry.contentText}
+        </Text>
         {entry.photos.length > 0 && (
           <View style={styles.photos}>
             {entry.photos.map((p) => (

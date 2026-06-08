@@ -1,4 +1,5 @@
 // 앱 루트 레이아웃 — Provider 계층 + DB 마이그레이션 게이트 (잠금 게이트는 후속 단계)
+import { useFonts } from 'expo-font';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useEffect } from 'react';
@@ -15,6 +16,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { bootstrapFts, db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
 import { seedMoods } from '@/db/seed';
+import { FONT_ASSETS } from '@/lib/fonts';
 import '@/lib/i18n';
 import { queryClient } from '@/lib/query';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -25,6 +27,7 @@ export default function RootLayout() {
   const themeMode = useSettingsStore((s) => s.themeMode);
   const colorScheme = themeMode === 'system' ? systemScheme : themeMode;
   const { success, error } = useMigrations(db, migrations);
+  const [fontsLoaded] = useFonts(FONT_ASSETS);
 
   // 마이그레이션 성공 후 FTS 가상테이블 보장 + 감정 시드(멱등)
   useEffect(() => {
@@ -46,7 +49,7 @@ export default function RootLayout() {
                   <Text>데이터베이스 초기화 실패</Text>
                   <Text>{error.message}</Text>
                 </View>
-              ) : !success ? (
+              ) : !success || !fontsLoaded ? (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                   <ActivityIndicator />
                 </View>
