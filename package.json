@@ -5,6 +5,7 @@
   "dependencies": {
     "@10play/tentap-editor": "^1.0.1",
     "@expo/ui": "~56.0.16",
+    "@expo/vector-icons": "^15.0.2",
     "@noble/ciphers": "^2.2.0",
     "@noble/hashes": "^2.2.0",
     "@react-native-voice/voice": "^3.2.4",
