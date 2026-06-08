@@ -91,6 +91,7 @@
 - **입력 대상** — 인식 텍스트를 tentap 본문에 삽입(제목 아님). 언어는 settings i18n 연동(ko-KR/en-US). tentap에 insertAtCursor 없음 → getHTML 후 `<p>`로 append + setContent.
 - **빌드 검증됨** — `expo run:android` BUILD SUCCESSFUL. `react-native-voice_voice:compileDebugJavaWithJavac` 통과(deprecation note만), APK 설치 SM_S928N. patch-package(jcenter→mavenCentral/google, support→androidx 1.6.1, namespace 추가, manifest package 삭제) end-to-end 동작. AGP 8 namespace 요구 충족.
 - **런타임 미검증** — 음성 입력은 adb 불가라 수동. voice 3.2.4는 legacy bridge 모듈 → bridgeless(new arch) interop 등록 여부는 실제 마이크 탭으로만 확인 가능. xmldom 빌드타임 취약점은 여전히 빌드타임 전용(앱 번들 미포함), 위협 0 유지.
+- **버그 발견·수정: "음성 인식 실패" 즉시 표시** — Android 11+ package visibility. SpeechRecognizer가 RecognitionService를 조회하려면 manifest `<queries>`에 `android.speech.RecognitionService` intent 필요. voice config plugin은 RECORD_AUDIO만 추가하고 queries는 안 넣음 → 즉시 ERROR. **수정: `plugins/withSpeechRecognitionQuery.js` 로컬 config plugin으로 queries 주입.** prebuild로 manifest 반영 확인(line 20), 재빌드·설치. hook에 `console.warn`으로 SpeechError code 진단 출력 추가.
 
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

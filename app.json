@@ -53,6 +53,7 @@
       "expo-secure-store",
       "expo-sharing",
       "@react-native-voice/voice",
+      "./plugins/withSpeechRecognitionQuery",
       "@sentry/react-native",
       [
         "expo-local-authentication",

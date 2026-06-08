@@ -28,6 +28,7 @@ export function useSpeechToText(onResult: (text: string) => void) {
       if (text) onResultRef.current(text);
     };
     Voice.onSpeechError = (e: SpeechErrorEvent) => {
+      console.warn('[STT] speech error', e.error?.code, e.error?.message);
       setError(e.error?.message ?? 'speech_error');
       setIsListening(false);
     };
