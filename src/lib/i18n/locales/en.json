@@ -36,7 +36,9 @@
     "themeDark": "Dark",
     "language": "Language",
     "backup": "Backup",
-    "export": "Export JSON"
+    "export": "Export JSON",
+    "import": "Import JSON",
+    "importDone": "Imported {{count}} entries."
   },
   "common": { "comingSoon": "Coming soon" },
   "stats": {

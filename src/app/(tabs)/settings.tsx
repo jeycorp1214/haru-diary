@@ -2,7 +2,9 @@
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { exportEntriesJson } from '@/lib/backup';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { exportEntriesJson, importEntriesJson } from '@/lib/backup';
 import { ThemeMode, useSettingsStore } from '@/stores/useSettingsStore';
 
 const LANGUAGES = [
@@ -16,6 +18,7 @@ export default function SettingsScreen() {
   const setThemeMode = useSettingsStore((s) => s.setThemeMode);
   const language = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
+  const queryClient = useQueryClient();
 
   const themeOptions: { key: ThemeMode; label: string }[] = [
     { key: 'system', label: t('settings.themeSystem') },
@@ -33,6 +36,17 @@ export default function SettingsScreen() {
       await exportEntriesJson();
     } catch (e) {
       Alert.alert('내보내기 실패', String(e));
+    }
+  }
+
+  async function handleImport() {
+    try {
+      const n = await importEntriesJson();
+      if (n === null) return; // 취소
+      queryClient.invalidateQueries();
+      Alert.alert('', t('settings.importDone', { count: n }));
+    } catch (e) {
+      Alert.alert('가져오기 실패', String(e));
     }
   }
 
@@ -75,6 +89,9 @@ export default function SettingsScreen() {
       <Text style={styles.section}>{t('settings.backup')}</Text>
       <Pressable onPress={handleExport} style={styles.button}>
         <Text style={styles.buttonText}>{t('settings.export')}</Text>
+      </Pressable>
+      <Pressable onPress={handleImport} style={styles.button}>
+        <Text style={styles.buttonText}>{t('settings.import')}</Text>
       </Pressable>
     </View>
   );

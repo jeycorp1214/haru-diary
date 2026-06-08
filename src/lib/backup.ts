@@ -1,10 +1,33 @@
-// 일기 데이터 JSON 내보내기 — 전체 일기를 JSON 파일로 만들어 공유 시트로 전달
+// 일기 데이터 JSON 내보내기/가져오기 — 파일 생성·공유 + 파일 선택·검증·삽입
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { z } from 'zod';
 
-import { allEntriesForExport } from '@/db/queries/entries';
+import { allEntriesForExport, importEntries } from '@/db/queries/entries';
 
 export const BACKUP_VERSION = 1;
+
+const ImportSchema = z.object({
+  version: z.number(),
+  entries: z.array(
+    z.object({
+      entryDate: z.string(),
+      title: z.string().nullish(),
+      content: z.string().nullish(),
+      contentText: z.string(),
+      mood: z.string().nullish(),
+      weather: z.string().nullish(),
+      tempC: z.number().nullish(),
+      locationName: z.string().nullish(),
+      lat: z.number().nullish(),
+      lng: z.number().nullish(),
+      createdAt: z.number().nullish(),
+      updatedAt: z.number().nullish(),
+      tags: z.array(z.string()).optional(),
+      photos: z.array(z.string()).optional(),
+    }),
+  ),
+});
 
 export async function exportEntriesJson() {
   const entries = await allEntriesForExport();
@@ -37,4 +60,14 @@ export async function exportEntriesJson() {
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(file.uri, { mimeType: 'application/json', UTI: 'public.json' });
   }
+}
+
+// JSON 파일 선택 → 검증 → 삽입. 가져온 일기 수 반환(취소 시 null)
+export async function importEntriesJson(): Promise<number | null> {
+  const res = await File.pickFileAsync({ mimeTypes: ['application/json'] });
+  if (res.canceled) return null;
+
+  const text = await res.result.text();
+  const parsed = ImportSchema.parse(JSON.parse(text));
+  return importEntries(parsed.entries);
 }

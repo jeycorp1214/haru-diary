@@ -3,7 +3,7 @@ import { eq, like, sql } from 'drizzle-orm';
 import * as Crypto from 'expo-crypto';
 
 import { db } from '@/db/client';
-import { entries, entryTags, photos, tags } from '@/db/schema';
+import { entries, entryTags, moods, photos, tags } from '@/db/schema';
 import { deletePhotoFile } from '@/lib/db-photo';
 
 // expo-sqlite sync 드라이버: 트랜잭션 콜백은 동기. 내부 쿼리는 .run()/.get()으로 실행
@@ -135,6 +135,63 @@ export function listEntries(opts?: { limit?: number; offset?: number }) {
     offset: opts?.offset ?? 0,
     with: { mood: true, photos: true },
   });
+}
+
+export interface ImportEntryData {
+  entryDate: string;
+  title?: string | null;
+  content?: string | null;
+  contentText: string;
+  mood?: string | null; // 감정 key
+  weather?: string | null;
+  tempC?: number | null;
+  locationName?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
+  tags?: string[];
+  photos?: string[];
+}
+
+// JSON 가져오기 — 새 id로 추가 삽입(중복 제거 안 함). 원본 타임스탬프 보존.
+export function importEntries(items: ImportEntryData[]): number {
+  const moodRows = db.select({ id: moods.id, key: moods.key }).from(moods).all();
+  const moodByKey = new Map(moodRows.map((m) => [m.key, m.id]));
+
+  let count = 0;
+  db.transaction((tx) => {
+    for (const it of items) {
+      const id = Crypto.randomUUID();
+      const now = Date.now();
+      tx.insert(entries)
+        .values({
+          id,
+          entryDate: it.entryDate,
+          title: it.title ?? null,
+          content: it.content ?? null,
+          contentText: it.contentText,
+          moodId: it.mood ? (moodByKey.get(it.mood) ?? null) : null,
+          weather: it.weather ?? null,
+          tempC: it.tempC ?? null,
+          locationName: it.locationName ?? null,
+          lat: it.lat ?? null,
+          lng: it.lng ?? null,
+          createdAt: it.createdAt ?? now,
+          updatedAt: it.updatedAt ?? now,
+        })
+        .run();
+      syncTags(tx, id, it.tags ?? []);
+      syncPhotos(
+        tx,
+        id,
+        (it.photos ?? []).map((uri) => ({ uri })),
+      );
+      syncFts(tx, id, it.title ?? '', it.contentText);
+      count++;
+    }
+  });
+  return count;
 }
 
 // 내보내기용 — 전체 일기 + 관계 (감정/사진/태그)

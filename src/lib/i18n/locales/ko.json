@@ -36,7 +36,9 @@
     "themeDark": "다크",
     "language": "언어",
     "backup": "백업",
-    "export": "JSON 내보내기"
+    "export": "JSON 내보내기",
+    "import": "JSON 가져오기",
+    "importDone": "{{count}}개 일기를 가져왔습니다."
   },
   "common": { "comingSoon": "준비 중" },
   "stats": {
