@@ -37,6 +37,12 @@
     "language": "Language"
   },
   "common": { "comingSoon": "Coming soon" },
-  "stats": { "distribution": "Mood distribution", "empty": "No entries to show stats." },
+  "stats": {
+    "distribution": "Mood distribution",
+    "empty": "No entries to show stats.",
+    "streak": "Writing streak",
+    "streakDays": "{{count}} days",
+    "noEntries": "No entries yet."
+  },
   "mood": { "great": "Great", "good": "Good", "meh": "Meh", "bad": "Bad", "awful": "Awful" }
 }
