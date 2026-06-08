@@ -61,6 +61,18 @@ export default function EntryDetailScreen() {
           {entry.mood && <Text style={styles.emoji}>{entry.mood.emoji}</Text>}
           <Text style={styles.title}>{entry.title || t('entry.untitled')}</Text>
         </View>
+        {(entry.locationName || entry.weather) && (
+          <Text style={styles.meta}>
+            📍{' '}
+            {[
+              entry.locationName,
+              entry.weather,
+              entry.tempC != null && `${Math.round(entry.tempC)}°`,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </Text>
+        )}
         <Text style={styles.body}>{entry.contentText}</Text>
         {entry.photos.length > 0 && (
           <View style={styles.photos}>
@@ -91,6 +103,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   emoji: { fontSize: 32 },
   title: { fontSize: 22, fontWeight: '700', flex: 1 },
+  meta: { fontSize: 13, color: '#888' },
   body: { fontSize: 16, lineHeight: 26 },
   photos: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   photo: { width: 104, height: 104, borderRadius: 8 },

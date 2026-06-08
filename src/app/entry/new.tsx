@@ -12,6 +12,7 @@ import { createEntry } from '@/db/queries/entries';
 import { MOOD_SEED } from '@/db/seed';
 import { persistPhoto } from '@/lib/db-photo';
 import { queryClient } from '@/lib/query';
+import { getAutoTag, type AutoTag } from '@/lib/weather/autoTag';
 
 type PhotoDraft = { uri: string; width: number; height: number };
 
@@ -24,6 +25,17 @@ export default function NewEntryScreen() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [photos, setPhotos] = useState<PhotoDraft[]>([]);
+  const [autoTag, setAutoTag] = useState<AutoTag | null>(null);
+  const [tagging, setTagging] = useState(false);
+
+  async function addLocationWeather() {
+    setTagging(true);
+    try {
+      setAutoTag(await getAutoTag());
+    } finally {
+      setTagging(false);
+    }
+  }
 
   async function pickPhoto() {
     try {
@@ -60,6 +72,11 @@ export default function NewEntryScreen() {
           moodId,
           tagNames: tags,
           photos,
+          locationName: autoTag?.locationName,
+          lat: autoTag?.lat,
+          lng: autoTag?.lng,
+          weather: autoTag?.weather,
+          tempC: autoTag?.tempC,
         }),
       ),
     onSuccess: () => {
@@ -122,6 +139,17 @@ export default function NewEntryScreen() {
           </Pressable>
         </View>
 
+        <Pressable onPress={addLocationWeather} disabled={tagging} style={styles.locRow}>
+          <Text style={styles.locText}>
+            📍{' '}
+            {autoTag
+              ? [autoTag.locationName, autoTag.weather, autoTag.tempC != null && `${Math.round(autoTag.tempC)}°`]
+                  .filter(Boolean)
+                  .join(' · ')
+              : t('entry.addLocation')}
+          </Text>
+        </Pressable>
+
         {tags.length > 0 && (
           <View style={styles.chips}>
             {tags.map((tag) => (
@@ -168,6 +196,8 @@ const styles = StyleSheet.create({
   },
   addPhotoIcon: { fontSize: 22, color: '#888' },
   addPhotoLabel: { fontSize: 10, color: '#888' },
+  locRow: { paddingVertical: 8 },
+  locText: { fontSize: 14, color: '#444' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { backgroundColor: '#208AEF11', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
   chipText: { color: '#208AEF', fontSize: 14 },
