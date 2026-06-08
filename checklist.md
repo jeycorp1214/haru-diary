@@ -36,7 +36,7 @@
 - [x] 라우팅 재구성 — 루트 `_layout` Stack + `(tabs)/_layout` 탭 4개. 데모(index/explore/app-tabs) 제거
 - [x] 피드 (`(tabs)/index`) — FlashList + listEntries + 작성 FAB
 - [x] 작성/상세 (`entry/new` 생성·감정선택, `entry/[id]` 조회·삭제)
-- [ ] 감정 캘린더 (`(tabs)/calendar`) — placeholder만
+- [x] 감정 캘린더 (`(tabs)/calendar`) — 월별 마킹(감정 색상 점) + 날짜 탭 상세 이동. 기기 육안확인 보류(연결 끊김)
 - [ ] 통계/설정 화면 — placeholder만
 - [ ] 작성 화면 태그 입력 UI (queries는 지원, UI 미구현)
 - [ ] 탭 아이콘 (현재 라벨만)
