@@ -16,10 +16,13 @@ import { bootstrapFts, db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
 import { seedMoods } from '@/db/seed';
 import { queryClient } from '@/lib/query';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 import config from '../../tamagui.config';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const systemScheme = useColorScheme();
+  const themeMode = useSettingsStore((s) => s.themeMode);
+  const colorScheme = themeMode === 'system' ? systemScheme : themeMode;
   const { success, error } = useMigrations(db, migrations);
 
   // 마이그레이션 성공 후 FTS 가상테이블 보장 + 감정 시드(멱등)
