@@ -35,5 +35,6 @@
     "language": "언어"
   },
   "common": { "comingSoon": "준비 중" },
+  "stats": { "distribution": "감정 분포", "empty": "통계를 표시할 일기가 없습니다." },
   "mood": { "great": "최고", "good": "좋음", "meh": "보통", "bad": "별로", "awful": "최악" }
 }
