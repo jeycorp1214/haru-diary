@@ -49,7 +49,7 @@
 - [ ] tentap 리치텍스트 에디터 (`components/write`)
 - [ ] 사진 첨부·크롭 + **documentDirectory 영구 복사**
 - [ ] 위치·날씨 자동 태깅 (`lib/weather`)
-- [ ] FTS5 검색 UI (`queries/search`)
+- [x] FTS5 검색 UI (`queries/search`) — 피드 검색바, prefix MATCH
 - [ ] 감정 통계 그래프 (victory-native)
 
 ## Phase 3 — 리텐션
