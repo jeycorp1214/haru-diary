@@ -16,6 +16,18 @@ export default function NewEntryScreen() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [moodId, setMoodId] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+
+  function addTag() {
+    const name = tagInput.trim();
+    if (name && !tags.includes(name)) setTags([...tags, name]);
+    setTagInput('');
+  }
+
+  function removeTag(name: string) {
+    setTags(tags.filter((t) => t !== name));
+  }
 
   const save = useMutation({
     mutationFn: () =>
@@ -26,6 +38,7 @@ export default function NewEntryScreen() {
           content: content || null,
           contentText: content,
           moodId,
+          tagNames: tags,
         }),
       ),
     onSuccess: () => {
@@ -75,6 +88,25 @@ export default function NewEntryScreen() {
           multiline
           style={styles.body}
         />
+
+        {tags.length > 0 && (
+          <View style={styles.chips}>
+            {tags.map((tag) => (
+              <Pressable key={tag} onPress={() => removeTag(tag)} style={styles.chip}>
+                <Text style={styles.chipText}>#{tag} ✕</Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+        <TextInput
+          value={tagInput}
+          onChangeText={setTagInput}
+          onSubmitEditing={addTag}
+          submitBehavior="submit"
+          returnKeyType="done"
+          placeholder={t('entry.tagPlaceholder')}
+          style={styles.tagInput}
+        />
       </ScrollView>
     </>
   );
@@ -88,7 +120,11 @@ const styles = StyleSheet.create({
   moodSelected: { borderColor: '#208AEF', backgroundColor: '#208AEF11' },
   moodEmoji: { fontSize: 28 },
   title: { fontSize: 20, fontWeight: '600', paddingVertical: 8 },
-  body: { fontSize: 16, minHeight: 200, textAlignVertical: 'top', lineHeight: 24 },
+  body: { fontSize: 16, minHeight: 160, textAlignVertical: 'top', lineHeight: 24 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: { backgroundColor: '#208AEF11', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
+  chipText: { color: '#208AEF', fontSize: 14 },
+  tagInput: { fontSize: 15, paddingVertical: 8, borderTopWidth: 1, borderColor: '#eee' },
   save: { color: '#208AEF', fontSize: 16, fontWeight: '600' },
   saveDisabled: { color: '#bbb' },
 });
