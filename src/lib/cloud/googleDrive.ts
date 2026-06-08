@@ -13,7 +13,10 @@ const CLIENT = {
   web: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
 };
 
-export type BackupResult = 'ok' | 'cancel' | 'unconfigured';
+// client ID 미설정 시 useAuthRequest가 throw하므로, 이 값이 true일 때만 useDriveBackup 호출
+export const isDriveConfigured = Boolean(CLIENT.android || CLIENT.ios || CLIENT.web);
+
+export type BackupResult = 'ok' | 'cancel';
 
 async function uploadToDrive(accessToken: string, json: string) {
   const boundary = 'haru-backup-boundary';
@@ -47,10 +50,7 @@ export function useDriveBackup() {
     scopes: ['https://www.googleapis.com/auth/drive.file'],
   });
 
-  const configured = Boolean(CLIENT.android || CLIENT.ios || CLIENT.web);
-
   async function backup(): Promise<BackupResult> {
-    if (!configured) return 'unconfigured';
     const res = await promptAsync();
     if (res.type !== 'success') return 'cancel';
     const token = res.authentication?.accessToken;
