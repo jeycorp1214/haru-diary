@@ -64,5 +64,12 @@
 - **end-to-end 검증됨(스크린샷)** — 잠금 게이트 자동 unlock(PIN 미설정) → 피드 빈 상태 → FAB → 작성(감정 선택+본문) → **저장 → 피드에 항목 표시(😄/제목없음/test/2026.06.09) → 상세(삭제 버튼)**. 즉 마이그레이션+시드(mood emoji 조인)+createEntry 트랜잭션+listEntries 관계조인+React Query invalidate+i18n+다크모드 토글 UI 전부 기기에서 동작.
 - **참고** — `adb shell input text`는 ASCII만(한글 X). 테스트 항목 "test"가 기기 DB에 남음(무해, 삭제 가능). expo run:android의 `--device`는 serial 아닌 device name 기대 → 단일 기기면 플래그 생략.
 
+## 2026-06-09 — Phase 1·2 누적 실기기 검증 (SM_S928N)
+
+- **검증 완료(스크린샷)** — 피드+검색바+탭아이콘 / 캘린더 mood 점 마킹 / 통계 차트 / 작성화면(감정·제목·사진·위치·태그·tentap 리치텍스트) 전부 기기 동작.
+- **버그 발견·수정: 통계 빈 결과** — `db.select({...count()}).groupBy()`가 expo-sqlite 드라이버에서 빈 배열 반환. DB 덤프(run-as + python sqlite3)로 raw JOIN은 정상 확인 → drizzle aggregate 빌더 quirk로 판단, `db.all(sql\`...\`)` raw SQL로 교체(커밋 e3ba7ee). **교훈: 집계/groupBy는 raw SQL 권장.** (단순 select/relational `db.query`·`.all()`은 정상.)
+- **dev client 재연결** — USB 재연결 시 Metro 끊김. `adb reverse tcp:8081 tcp:8081` + `harudiarydev://expo-development-client/?url=http://localhost:8081` 딥링크로 localhost 재접속.
+- **미검증/메모** — tentap 에디터 placeholder가 영문("Write something …") 기본값, i18n 미적용(후속). 입력 한글은 adb 불가라 수동.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.
