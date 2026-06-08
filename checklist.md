@@ -46,7 +46,7 @@
 - [ ] 빌드 검증 + 테스트 통과
 
 ## Phase 2 — 핵심 차별화
-- [ ] tentap 리치텍스트 에디터 (`components/write`)
+- [x] tentap 리치텍스트 에디터 — entry/new 본문(content=HTML, contentText=평문)
 - [x] 사진 첨부·크롭 + documentDirectory 영구 복사(persistPhoto) + 삭제 시 파일 정리
 - [x] 위치·날씨 자동 태깅 (`lib/weather`) — expo-location + OpenWeatherMap
 - [x] FTS5 검색 UI (`queries/search`) — 피드 검색바, prefix MATCH
