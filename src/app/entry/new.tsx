@@ -1,11 +1,20 @@
-// 일기 작성 화면 — 제목/본문/감정 입력 후 저장 (리치텍스트는 Phase 2)
+// 일기 작성 화면 — 감정/제목/사진/위치/태그 + 리치텍스트 본문(tentap)
+import { RichText, Toolbar, useEditorBridge, useEditorContent } from '@10play/tentap-editor';
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import { createEntry } from '@/db/queries/entries';
@@ -20,13 +29,15 @@ export default function NewEntryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
   const [moodId, setMoodId] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [photos, setPhotos] = useState<PhotoDraft[]>([]);
   const [autoTag, setAutoTag] = useState<AutoTag | null>(null);
   const [tagging, setTagging] = useState(false);
+
+  const editor = useEditorBridge({ autofocus: false, avoidIosKeyboard: true });
+  const editorText = useEditorContent(editor, { type: 'text' });
 
   async function addLocationWeather() {
     setTagging(true);
@@ -62,33 +73,34 @@ export default function NewEntryScreen() {
   }
 
   const save = useMutation({
-    mutationFn: () =>
-      Promise.resolve(
-        createEntry({
-          entryDate: dayjs().format('YYYY-MM-DD'),
-          title: title.trim() || null,
-          content: content || null,
-          contentText: content,
-          moodId,
-          tagNames: tags,
-          photos,
-          locationName: autoTag?.locationName,
-          lat: autoTag?.lat,
-          lng: autoTag?.lng,
-          weather: autoTag?.weather,
-          tempC: autoTag?.tempC,
-        }),
-      ),
+    mutationFn: async () => {
+      const html = await editor.getHTML();
+      const text = await editor.getText();
+      return createEntry({
+        entryDate: dayjs().format('YYYY-MM-DD'),
+        title: title.trim() || null,
+        content: html || null,
+        contentText: text,
+        moodId,
+        tagNames: tags,
+        photos,
+        locationName: autoTag?.locationName,
+        lat: autoTag?.lat,
+        lng: autoTag?.lng,
+        weather: autoTag?.weather,
+        tempC: autoTag?.tempC,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entries'] });
       router.back();
     },
   });
 
-  const canSave = content.trim().length > 0 && !save.isPending;
+  const canSave = (editorText?.trim().length ?? 0) > 0 && !save.isPending;
 
   return (
-    <>
+    <View style={styles.container}>
       <Stack.Screen
         options={{
           title: t('entry.new'),
@@ -101,7 +113,8 @@ export default function NewEntryScreen() {
           ),
         }}
       />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+
+      <View style={styles.header}>
         <View style={styles.moodRow}>
           {MOOD_SEED.map((m) => (
             <Pressable
@@ -118,13 +131,6 @@ export default function NewEntryScreen() {
           onChangeText={setTitle}
           placeholder={t('entry.title')}
           style={styles.title}
-        />
-        <TextInput
-          value={content}
-          onChangeText={setContent}
-          placeholder={t('entry.placeholder')}
-          multiline
-          style={styles.body}
         />
 
         <View style={styles.photoRow}>
@@ -143,7 +149,11 @@ export default function NewEntryScreen() {
           <Text style={styles.locText}>
             📍{' '}
             {autoTag
-              ? [autoTag.locationName, autoTag.weather, autoTag.tempC != null && `${Math.round(autoTag.tempC)}°`]
+              ? [
+                  autoTag.locationName,
+                  autoTag.weather,
+                  autoTag.tempC != null && `${Math.round(autoTag.tempC)}°`,
+                ]
                   .filter(Boolean)
                   .join(' · ')
               : t('entry.addLocation')}
@@ -168,20 +178,27 @@ export default function NewEntryScreen() {
           placeholder={t('entry.tagPlaceholder')}
           style={styles.tagInput}
         />
-      </ScrollView>
-    </>
+      </View>
+
+      <RichText editor={editor} style={styles.editor} />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.toolbar}>
+        <Toolbar editor={editor} />
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 16, gap: 16 },
+  header: { padding: 16, gap: 12 },
   moodRow: { flexDirection: 'row', gap: 8, justifyContent: 'space-between' },
   mood: { padding: 8, borderRadius: 12, borderWidth: 2, borderColor: 'transparent' },
   moodSelected: { borderColor: '#208AEF', backgroundColor: '#208AEF11' },
   moodEmoji: { fontSize: 28 },
   title: { fontSize: 20, fontWeight: '600', paddingVertical: 8 },
-  body: { fontSize: 16, minHeight: 160, textAlignVertical: 'top', lineHeight: 24 },
   photoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   thumb: { width: 72, height: 72, borderRadius: 8 },
   addPhoto: {
@@ -196,12 +213,14 @@ const styles = StyleSheet.create({
   },
   addPhotoIcon: { fontSize: 22, color: '#888' },
   addPhotoLabel: { fontSize: 10, color: '#888' },
-  locRow: { paddingVertical: 8 },
+  locRow: { paddingVertical: 4 },
   locText: { fontSize: 14, color: '#444' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { backgroundColor: '#208AEF11', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
   chipText: { color: '#208AEF', fontSize: 14 },
   tagInput: { fontSize: 15, paddingVertical: 8, borderTopWidth: 1, borderColor: '#eee' },
+  editor: { flex: 1 },
+  toolbar: { position: 'absolute', width: '100%', bottom: 0 },
   save: { color: '#208AEF', fontSize: 16, fontWeight: '600' },
   saveDisabled: { color: '#bbb' },
 });
