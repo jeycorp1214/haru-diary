@@ -93,8 +93,14 @@
 - **런타임 미검증** — 음성 입력은 adb 불가라 수동. voice 3.2.4는 legacy bridge 모듈 → bridgeless(new arch) interop 등록 여부는 실제 마이크 탭으로만 확인 가능. xmldom 빌드타임 취약점은 여전히 빌드타임 전용(앱 번들 미포함), 위협 0 유지.
 - **버그 발견·수정: "음성 인식 실패" 즉시 표시** — Android 11+ package visibility. SpeechRecognizer가 RecognitionService를 조회하려면 manifest `<queries>`에 `android.speech.RecognitionService` intent 필요. voice config plugin은 RECORD_AUDIO만 추가하고 queries는 안 넣음 → 즉시 ERROR. **수정: `plugins/withSpeechRecognitionQuery.js` 로컬 config plugin으로 queries 주입.** prebuild로 manifest 반영 확인(line 20), 재빌드·설치. hook에 `console.warn`으로 SpeechError code 진단 출력 추가.
 
-### ⚠ STT 런타임 미해결 — 보류 (2026-06-09)
-queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음성 인식에 실패했습니다" 즉시 표시. **아직 미해결.**
+### ✅ STT 런타임 해결 (2026-06-09)
+**근본 원인 = 네이티브 모듈명 불일치.** Android `VoiceModule.getName()` → `"RCTVoice"`인데 lib JS(`dist/index.js`)는 `NativeModules.Voice`를 조회 → null → `Voice.destroySpeech of null`(unmount 시) + start 즉시 실패. new arch bridgeless interop이 legacy 모듈을 getName 키로 등록해서 `Voice` 키 없음.
+- **수정** — patch-package로 `dist/index.js`: `const Voice = NativeModules.Voice || NativeModules.RCTVoice`. **JS-only 패치라 네이티브 재빌드 불필요**, metro 풀 리로드로 즉시 적용. 실기기 음성 인식 성공 확인.
+- **결정적 단서** — 사용자가 본 "destroySpeech of null"(화면 이탈/unmount 시 `Voice.destroy()`). queries(아래)가 아니라 이게 진짜 원인이었음. queries 수정은 별개로 필요(둘 다 있어야 동작).
+- **교훈** — STT 즉시실패 디버깅은 (1) NativeModules에 모듈 등록됐나(이름!) → (2) queries → (3) 권한 순. "of null"은 모듈 null 신호.
+
+#### (해결 전 보류 메모 — 참고용)
+queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음성 인식에 실패했습니다" 즉시 표시했음(모듈명 불일치가 남아서).
 
 - **logcat 캡처 함정** — 이 macOS엔 `timeout` 없음(coreutils 미설치) → `timeout N adb logcat`은 exit 127로 안 돎(0줄 = 캡처 실패였지 "이벤트 없음"이 아님). `grep` 파이프는 블록버퍼링으로 timeout kill 시 flush 안 됨. **다음엔 `timeout` 금지, `adb logcat -d`(dump) 또는 백그라운드 streaming(timeout 없이)→파일 grep.**
 - **dev 패키지명** — `com.kwak.dev.harudiary.dev` (APP_ENV=development `.dev` 접미사). production은 `com.kwak.dev.harudiary`. pidof/검색 시 `.dev` 사용.
