@@ -23,11 +23,11 @@
 - [x] `db/seed.ts` — moods 시드 데이터 (멱등)
 - [x] Providers + 마이그레이션 게이트 — `_layout.tsx`에 GestureHandler/Tamagui/Query Provider + `useMigrations` → 성공 시 `bootstrapFts()`+`seedMoods()`. `lib/query.ts`, `types/sql.d.ts` 추가. (잠금 게이트/라우팅 재구성은 후속)
 - [x] `db/queries/entries.ts` — create/update/delete(단일 트랜잭션: 본문+태그+FTS) + getEntry/listEntries(관계 포함). sync 드라이버라 `.run()/.get()` 동기 실행
-- [ ] `lib/storage/mmkv.ts` — settings/lock/cache 인스턴스
-- [ ] `lib/auth/secureStorage.ts` — PIN pbkdf2 + **시도횟수/만료 영속화**
-- [ ] `lib/auth/useBiometrics.ts`
-- [ ] `lib/auth/useLockStore.ts`
-- [ ] `stores/useSettingsStore.ts`
+- [x] `lib/storage/mmkv.ts` — settings/lock/cache 인스턴스 (v4 `createMMKV` 팩토리)
+- [x] `lib/auth/secureStorage.ts` — PIN pbkdf2(100k) + **시도횟수/만료 영속화**(recordFailedAttempt/isLockedOut/resetAttempts)
+- [x] `lib/auth/useBiometrics.ts`
+- [x] `lib/auth/useLockStore.ts`
+- [x] `stores/useSettingsStore.ts`
 - [ ] `components/auth/LockScreen.tsx` (시도 초과 잠금 동작 포함)
 - [ ] `components/auth/CriticalErrorScreen.tsx`
 - [ ] `app/_layout.tsx` — ErrorBoundary > Providers > LockGate > Stack 로 교체
