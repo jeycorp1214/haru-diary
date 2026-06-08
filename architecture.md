@@ -23,7 +23,7 @@
 | Runtime        | Expo ~56 + expo-router ~56                              | 파일 기반 라우팅                               |
 | DB             | drizzle-orm 0.45 + expo-sqlite ~56                      | 타입세이프 SQLite, FTS5 전문검색               |
 | 설정 스토리지  | react-native-mmkv                                      | AsyncStorage 대체 (50× 빠름)                   |
-| UI             | Tamagui + @gorhom/bottom-sheet 5 + @shopify/flash-list |                                                |
+| UI             | Tamagui + @shopify/flash-list                          | 시트는 Tamagui Sheet 사용 (고급 제스처 필요 시 @gorhom/bottom-sheet) |
 | 그래픽/모션    | reanimated 4 / moti / @shopify/react-native-skia       |                                                |
 | 차트           | victory-native (v40+)                                  | Skia 기반 재작성판 (repo명: victory-native-xl) |
 | 리스트         | @shopify/flash-list                                    | 대규모 일기 목록 성능 최적화                   |
@@ -553,6 +553,7 @@ export default function RootLayout() {
 | 차트          | victory-native v36 (SVG) | victory-native v40+ (Skia) | Skia 기반 재작성, 같은 패키지 메이저 업 |
 | 상태 관리     | Context × 13             | Zustand                    | 리렌더링 최소화, 코드 단순화            |
 | 리스트        | FlatList                 | @shopify/flash-list        | 대규모 목록 성능                        |
+| 바텀시트      | @gorhom/bottom-sheet     | Tamagui Sheet              | Tamagui 채택 → 자체 Sheet로 중복 제거 (고급 제스처만 gorhom) |
 
 ---
 
