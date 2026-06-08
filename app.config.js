@@ -8,6 +8,7 @@ module.exports = ({ config }) => {
   return {
     ...config,
     name: `${config.name} (Dev)`,
+    scheme: `${config.scheme}dev`, // 딥링크 충돌 방지 (harudiary → harudiarydev)
     ios: {
       ...config.ios,
       bundleIdentifier: `${config.ios.bundleIdentifier}.dev`,
