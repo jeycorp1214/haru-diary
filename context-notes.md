@@ -36,3 +36,14 @@
 - D-3 FTS 트리거 vs 트랜잭션 — Phase 1 구현 시 확정 (현 권장: 트랜잭션)
 - D-4 감정 단일/다중 — Phase 1 (현 권장: 단일+활동태그)
 - D-5 백업 제공자(iCloud/Drive) — Phase 3
+
+## 2026-06-09 — Phase 0 셋업 완료
+
+- **전체 의존성 설치** — deps 54 + dev 7. `expo install --check` 통과. Expo SDK 56 정합.
+- **critical 취약점 `xmldom@0.5.0`** — 경로 `@react-native-voice/voice → @expo/config-plugins@2.0.4 → @expo/plist → xmldom`. **빌드타임 전용**(prebuild plist 파싱), 앱 번들 미포함 → 위협 0. `audit fix --force`는 voice 다운그레이드라 비채택. **그대로 둠**, Phase 4(voice 사용) 때 재평가.
+- **testing-library peer 충돌 해결** — `react-test-renderer`를 react와 동일 `19.2.3`으로 핀.
+- **image-crop-picker는 Expo config plugin 아님** — `app.plugin.js` 미제공이라 plugins 배열에 넣으면 prebuild 크래시(`Cannot find module ./src/NativeImageCropPicker`). 권한은 `ios.infoPlist`(NSPhotoLibrary/NSCamera) + `android.permissions`로 처리. architecture.md §6의 "config plugin 필요"는 부정확.
+- **Tamagui 설정** — `@tamagui/config@2.1.0`의 `/v4` 프리셋 사용. `babel.config.js`에 babel-plugin + `react-native-worklets/plugin`(reanimated 4, 마지막 순서). 애니메이션 드라이버는 Phase 2 모션에서 연결.
+- **prebuild 완료** — ios/android 생성. bundleId/package = `com.kwak.dev.harudiary`. scripts가 `expo run:android/ios`로 자동 변경됨(Expo Go 아닌 dev build 필요).
+- **Sentry 경고** — org/project 미설정. 실제 연동(Phase 1 후반) 시 설정.
+- **기존 스캐폴드 tsc 에러 2건** — `global.css`/`animated-icon.module.css` side-effect import 타입 누락. 사전 존재, 내 변경 무관. CSS 타입 선언 필요 시 별도 처리.

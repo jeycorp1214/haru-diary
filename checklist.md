@@ -9,10 +9,11 @@
 - [x] D-1 결정: UI 스택 확정 → **Tamagui** — `architecture.md` 표 갱신 완료
 - [x] 의존성 설치: drizzle-orm / expo-sqlite / react-native-mmkv / zustand / @tanstack/react-query / tamagui (+ flash-list/skia/victory/calendars/tentap/moti/emoji/i18next/dayjs/zod/sentry/drizzle-kit/jest-expo/testing-library 전체)
 - [x] 보안 의존성: expo-local-authentication / expo-secure-store / expo-crypto / @noble/hashes / @noble/ciphers
-- [ ] `app.json` plugins 보강 (local-authentication faceID 문구 등)
-- [ ] `npx expo prebuild` (MMKV 등 Expo Go 미지원)
-- [ ] drizzle-kit 설정 + 마이그레이션 파이프라인
-- [ ] Jest + Testing Library 셋업
+- [x] Tamagui 설정: `babel.config.js`(babel-plugin + worklets) + `tamagui.config.ts`(v4)
+- [x] `app.json` plugins 보강: local-authentication(faceID)/location/notifications. image-crop-picker는 plugin 미제공 → `ios.infoPlist`+`android.permissions`로 처리
+- [x] `npx expo prebuild` (ios/android 생성 완료)
+- [x] drizzle-kit 설정 (`drizzle.config.ts` + `db:generate` 스크립트). 마이그레이션은 schema 작성 후(Phase 1)
+- [x] Jest + Testing Library 셋업 (`jest-expo` preset + `test` 스크립트)
 
 ## Phase 1 — MVP
 
