@@ -29,9 +29,9 @@ const ImportSchema = z.object({
   ),
 });
 
-export async function exportEntriesJson() {
+// 전체 일기 → 백업 JSON 문자열 (내보내기·클라우드 백업 공용)
+export async function buildBackupJson(): Promise<string> {
   const entries = await allEntriesForExport();
-
   const payload = {
     version: BACKUP_VERSION,
     exportedAt: new Date().toISOString(),
@@ -52,10 +52,14 @@ export async function exportEntriesJson() {
       photos: e.photos.map((p) => p.uri), // 로컬 경로 — 기기 간 이동 시 사진은 별도 처리 필요
     })),
   };
+  return JSON.stringify(payload, null, 2);
+}
 
+export async function exportEntriesJson() {
+  const json = await buildBackupJson();
   const file = new File(Paths.cache, `haru-export-${Date.now()}.json`);
   file.create();
-  file.write(JSON.stringify(payload, null, 2));
+  file.write(json);
 
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(file.uri, { mimeType: 'application/json', UTI: 'public.json' });

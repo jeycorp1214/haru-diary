@@ -5,6 +5,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { exportEntriesJson, importEntriesJson } from '@/lib/backup';
+import { useDriveBackup } from '@/lib/cloud/googleDrive';
 import { cancelReminder, ensureNotificationPermission, scheduleDailyReminder } from '@/lib/notifications';
 import { ThemeMode, useSettingsStore } from '@/stores/useSettingsStore';
 
@@ -57,6 +58,18 @@ export default function SettingsScreen() {
       await exportEntriesJson();
     } catch (e) {
       Alert.alert('내보내기 실패', String(e));
+    }
+  }
+
+  const drive = useDriveBackup();
+
+  async function handleCloudBackup() {
+    try {
+      const r = await drive.backup();
+      if (r === 'unconfigured') Alert.alert('', t('settings.cloudUnconfigured'));
+      else if (r === 'ok') Alert.alert('', t('settings.cloudDone'));
+    } catch (e) {
+      Alert.alert('백업 실패', String(e));
     }
   }
 
@@ -113,6 +126,9 @@ export default function SettingsScreen() {
       </Pressable>
       <Pressable onPress={handleImport} style={styles.button}>
         <Text style={styles.buttonText}>{t('settings.import')}</Text>
+      </Pressable>
+      <Pressable onPress={handleCloudBackup} style={styles.button}>
+        <Text style={styles.buttonText}>{t('settings.cloudBackup')}</Text>
       </Pressable>
 
       <Text style={styles.section}>{t('settings.reminder')}</Text>

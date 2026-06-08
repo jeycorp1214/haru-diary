@@ -40,7 +40,10 @@
     "import": "JSON 가져오기",
     "importDone": "{{count}}개 일기를 가져왔습니다.",
     "reminder": "작성 리마인더",
-    "reminderOff": "끄기"
+    "reminderOff": "끄기",
+    "cloudBackup": "Google Drive 백업",
+    "cloudDone": "Drive에 백업했습니다.",
+    "cloudUnconfigured": "Google 클라이언트 ID가 설정되지 않았습니다."
   },
   "notification": { "title": "오늘의 일기", "body": "오늘 하루를 기록해보세요." },
   "common": { "comingSoon": "준비 중" },

@@ -40,7 +40,10 @@
     "import": "Import JSON",
     "importDone": "Imported {{count}} entries.",
     "reminder": "Writing reminder",
-    "reminderOff": "Off"
+    "reminderOff": "Off",
+    "cloudBackup": "Google Drive backup",
+    "cloudDone": "Backed up to Drive.",
+    "cloudUnconfigured": "Google client ID is not configured."
   },
   "notification": { "title": "Today's journal", "body": "Take a moment to write today." },
   "common": { "comingSoon": "Coming soon" },
