@@ -16,7 +16,8 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { bootstrapFts, db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
 import { seedMoods } from '@/db/seed';
-import { FONT_ASSETS } from '@/lib/fonts';
+import { FONT_ASSETS, FONT_FAMILY } from '@/lib/fonts';
+import { setGlobalFontFamily } from '@/lib/globalFont';
 import '@/lib/i18n';
 import { queryClient } from '@/lib/query';
 import { useSettingsStore } from '@/stores/useSettingsStore';
@@ -28,6 +29,10 @@ export default function RootLayout() {
   const colorScheme = themeMode === 'system' ? systemScheme : themeMode;
   const { success, error } = useMigrations(db, migrations);
   const [fontsLoaded] = useFonts(FONT_ASSETS);
+  const fontFamily = useSettingsStore((s) => s.fontFamily);
+
+  // 전역 기본 글꼴 지정(자식 렌더 전에 설정). 변경 시 아래 Stack key로 remount해 라이브 반영.
+  setGlobalFontFamily(FONT_FAMILY[fontFamily]);
 
   // 마이그레이션 성공 후 FTS 가상테이블 보장 + 감정 시드(멱등)
   useEffect(() => {
@@ -56,7 +61,7 @@ export default function RootLayout() {
               ) : (
                 <LockGate>
                   <AnimatedSplashOverlay />
-                  <Stack screenOptions={{ headerShown: false }} />
+                  <Stack key={fontFamily} screenOptions={{ headerShown: false }} />
                 </LockGate>
               )}
             </ThemeProvider>

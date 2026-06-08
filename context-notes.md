@@ -116,6 +116,8 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **글꼴체 = 한글 Google Fonts 설치** — NanumGothic/NanumMyeongjo/Gaegu(손글씨). 시스템 폰트는 iOS 한글 서체 폴백 불안정 + 프리뷰 차이 작아 비채택. `@expo-google-fonts/*`는 순수 JS TTF 자산 → `useFonts`로 런타임 로드, **네이티브 재빌드 불필요**(dev metro 리로드로 적용). `lib/fonts.ts`에 FONT_ASSETS/FONT_FAMILY/FONT_KEYS/FONT_SCALES 집약.
 - **폰트 로드 게이트** — `_layout.tsx` `useFonts(FONT_ASSETS)` → 마이그레이션 게이트와 `!success || !fontsLoaded`로 통합.
 - **글자 스타일 적용 범위 = 상세 본문만** — `entry/[id].tsx` body Text에 fontSize·lineHeight×fontScale + FONT_FAMILY[key]. **tentap 에디터(작성)는 webview라 RN 폰트 적용 불가 → 제외**(읽기면만). 피드는 미적용(스코프).
+- **(수정) 글꼴 전역 적용** — 사용자 피드백: 글꼴이 일기 본문에만 적용됨. `lib/globalFont.ts`로 `Text.render`/`TextInput.render`를 패치해 base style에 `fontFamily` 주입(전역). **defaultProps.style은 컴포넌트가 style 주면 덮여서 안 먹음** → render 패치가 정석. 명시 fontFamily(아이콘 폰트 등)는 base 위에 와서 우선 유지. 라이브 반영은 `_layout`의 `<Stack key={fontFamily}>` remount(LockGate 안쪽이라 잠금 flash 없음, 네비게이션은 초기 라우트로 리셋되지만 글꼴 변경은 드묾). fontScale(크기)은 전역 미적용(레이아웃 깨짐 위험) — 본문만 유지.
+- **(수정) 설정탭 스크롤** — 루트가 `<View>`라 내용 넘쳐도 스크롤 불가였음 → `<ScrollView>`(contentContainerStyle에 padding/gap)로 교체.
 - **fontScale는 원래 죽은 값**이었음(스토어에만 있고 소비처 0). 이번에 상세 본문에 배선.
 - **화면 잠금 UI** — 기존 인프라(secureStorage savePIN/hasPIN/deletePIN, useLockStore, useBiometrics) 재사용. PIN 설정은 `app/pin-setup.tsx` 모달(4자리 입력→확인 재입력 일치 시 savePIN). 설정탭은 `useFocusEffect`로 복귀 시 hasPIN 재확인. 생체 토글은 PIN 설정+생체 가용 시만 노출, PIN 삭제 시 생체도 off. 자동잠금 0(즉시)/1/5/10분.
 - **PIN 변경 주의(E2E와 연계)** — savePIN 재호출 시 [[2026-06-09 — Phase 4 E2E 암호화]] 암호키 재파생됨. 현재 잠금 끄기=deletePIN→재설정 경로뿐이라 암호 store 데이터는 어차피 폐기. 별도 "PIN 변경" 플로우 추가 시 재암호화 필요(기존 메모 유효).

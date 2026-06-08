@@ -2,7 +2,7 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -123,7 +123,7 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.section}>{t('settings.theme')}</Text>
       <View style={styles.segment}>
         {themeOptions.map((opt) => {
@@ -282,12 +282,13 @@ export default function SettingsScreen() {
           );
         })}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 12 },
+  container: { flex: 1 },
+  content: { padding: 16, gap: 12, paddingBottom: 40 },
   section: { fontSize: 13, color: '#888', fontWeight: '600', marginTop: 8 },
   subLabel: { fontSize: 12, color: '#aaa' },
   preview: {
