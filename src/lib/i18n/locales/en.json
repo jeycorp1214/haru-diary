@@ -1,6 +1,11 @@
 {
   "tabs": { "feed": "Journal", "calendar": "Calendar", "stats": "Stats", "settings": "Settings" },
-  "feed": { "untitled": "Untitled", "empty": "No entries yet. Write your first one." },
+  "feed": {
+    "untitled": "Untitled",
+    "empty": "No entries yet. Write your first one.",
+    "searchPlaceholder": "Search",
+    "noResults": "No results found."
+  },
   "entry": {
     "new": "New Entry",
     "save": "Save",

@@ -3,20 +3,40 @@ import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Link } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { listEntries } from '@/db/queries/entries';
+import { searchEntries } from '@/db/queries/search';
 
 export default function FeedScreen() {
   const { t } = useTranslation();
-  const { data, isLoading } = useQuery({
-    queryKey: ['entries'],
-    queryFn: () => listEntries(),
+  const [query, setQuery] = useState('');
+  const searching = query.trim().length > 0;
+
+  const feed = useQuery({ queryKey: ['entries'], queryFn: () => listEntries() });
+  const search = useQuery({
+    queryKey: ['search', query.trim()],
+    queryFn: () => searchEntries(query),
+    enabled: searching,
   });
+
+  const data = searching ? search.data : feed.data;
+  const isLoading = searching ? search.isLoading : feed.isLoading;
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchBar}>
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('feed.searchPlaceholder')}
+          style={styles.searchInput}
+          returnKeyType="search"
+          clearButtonMode="while-editing"
+        />
+      </View>
       <FlashList
         data={data ?? []}
         keyExtractor={(item) => item.id}
@@ -40,7 +60,9 @@ export default function FeedScreen() {
         ListEmptyComponent={
           !isLoading ? (
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>{t('feed.empty')}</Text>
+              <Text style={styles.emptyText}>
+                {searching ? t('feed.noResults') : t('feed.empty')}
+              </Text>
             </View>
           ) : null
         }
@@ -57,6 +79,14 @@ export default function FeedScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  searchBar: { paddingHorizontal: 16, paddingTop: 8 },
+  searchInput: {
+    backgroundColor: '#7676801f',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+  },
   list: { padding: 16 },
   row: { flexDirection: 'row', gap: 12, paddingVertical: 12 },
   emoji: { fontSize: 28 },

@@ -1,6 +1,11 @@
 {
   "tabs": { "feed": "일기", "calendar": "캘린더", "stats": "통계", "settings": "설정" },
-  "feed": { "untitled": "제목 없음", "empty": "아직 일기가 없습니다. 첫 일기를 써보세요." },
+  "feed": {
+    "untitled": "제목 없음",
+    "empty": "아직 일기가 없습니다. 첫 일기를 써보세요.",
+    "searchPlaceholder": "검색",
+    "noResults": "검색 결과가 없습니다."
+  },
   "entry": {
     "new": "새 일기",
     "save": "저장",
