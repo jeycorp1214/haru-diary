@@ -37,7 +37,7 @@
 - [x] 피드 (`(tabs)/index`) — FlashList + listEntries + 작성 FAB
 - [x] 작성/상세 (`entry/new` 생성·감정선택, `entry/[id]` 조회·삭제)
 - [x] 감정 캘린더 (`(tabs)/calendar`) — 월별 마킹(감정 색상 점) + 날짜 탭 상세 이동. 기기 육안확인 보류(연결 끊김)
-- [ ] 통계/설정 화면 — placeholder만
+- [x] 통계 화면 — 감정 분포 차트(victory-native). 설정은 테마/언어 구현됨
 - [x] 작성 화면 태그 입력 UI — 칩 추가/삭제 + createEntry tagNames 전달. 기기 육안확인 보류(USB 연결 불안정)
 - [x] 탭 아이콘 (Ionicons)
 - [x] 다크모드 (themeMode 설정 연동) + i18n (ko/en, i18next + 화면 문자열 t() 전환 + 언어 토글)
@@ -50,7 +50,7 @@
 - [ ] 사진 첨부·크롭 + **documentDirectory 영구 복사**
 - [ ] 위치·날씨 자동 태깅 (`lib/weather`)
 - [x] FTS5 검색 UI (`queries/search`) — 피드 검색바, prefix MATCH
-- [ ] 감정 통계 그래프 (victory-native)
+- [x] 감정 통계 그래프 (victory-native) — 감정 분포 막대 + 범례
 
 ## Phase 3 — 리텐션
 - [ ] 스트릭 (`queries/stats.streak` + MMKV 캐시)
