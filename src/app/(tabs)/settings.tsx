@@ -5,7 +5,10 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { exportEntriesJson, importEntriesJson } from '@/lib/backup';
+import { cancelReminder, ensureNotificationPermission, scheduleDailyReminder } from '@/lib/notifications';
 import { ThemeMode, useSettingsStore } from '@/stores/useSettingsStore';
+
+const REMINDER_TIMES = ['08:00', '12:00', '21:00', '22:00'];
 
 const LANGUAGES = [
   { key: 'ko', label: '한국어' },
@@ -19,6 +22,24 @@ export default function SettingsScreen() {
   const language = useSettingsStore((s) => s.language);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
   const queryClient = useQueryClient();
+  const notifyTime = useSettingsStore((s) => s.notifyTime);
+  const setNotifyTime = useSettingsStore((s) => s.setNotifyTime);
+
+  async function selectReminder(time: string) {
+    if (time === '') {
+      await cancelReminder();
+      setNotifyTime('');
+      return;
+    }
+    const ok = await ensureNotificationPermission();
+    if (!ok) {
+      Alert.alert('알림 권한 필요', '설정에서 알림을 허용해 주세요.');
+      return;
+    }
+    const [h, m] = time.split(':').map(Number);
+    await scheduleDailyReminder(h, m);
+    setNotifyTime(time);
+  }
 
   const themeOptions: { key: ThemeMode; label: string }[] = [
     { key: 'system', label: t('settings.themeSystem') },
@@ -93,6 +114,28 @@ export default function SettingsScreen() {
       <Pressable onPress={handleImport} style={styles.button}>
         <Text style={styles.buttonText}>{t('settings.import')}</Text>
       </Pressable>
+
+      <Text style={styles.section}>{t('settings.reminder')}</Text>
+      <View style={styles.segment}>
+        <Pressable
+          onPress={() => selectReminder('')}
+          style={[styles.segmentItem, notifyTime === '' && styles.segmentItemActive]}>
+          <Text style={[styles.segmentText, notifyTime === '' && styles.segmentTextActive]}>
+            {t('settings.reminderOff')}
+          </Text>
+        </Pressable>
+        {REMINDER_TIMES.map((time) => {
+          const active = notifyTime === time;
+          return (
+            <Pressable
+              key={time}
+              onPress={() => selectReminder(time)}
+              style={[styles.segmentItem, active && styles.segmentItemActive]}>
+              <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{time}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }

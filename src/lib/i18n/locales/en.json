@@ -38,8 +38,11 @@
     "backup": "Backup",
     "export": "Export JSON",
     "import": "Import JSON",
-    "importDone": "Imported {{count}} entries."
+    "importDone": "Imported {{count}} entries.",
+    "reminder": "Writing reminder",
+    "reminderOff": "Off"
   },
+  "notification": { "title": "Today's journal", "body": "Take a moment to write today." },
   "common": { "comingSoon": "Coming soon" },
   "stats": {
     "distribution": "Mood distribution",

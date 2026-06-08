@@ -38,8 +38,11 @@
     "backup": "백업",
     "export": "JSON 내보내기",
     "import": "JSON 가져오기",
-    "importDone": "{{count}}개 일기를 가져왔습니다."
+    "importDone": "{{count}}개 일기를 가져왔습니다.",
+    "reminder": "작성 리마인더",
+    "reminderOff": "끄기"
   },
+  "notification": { "title": "오늘의 일기", "body": "오늘 하루를 기록해보세요." },
   "common": { "comingSoon": "준비 중" },
   "stats": {
     "distribution": "감정 분포",
