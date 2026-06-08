@@ -10,6 +10,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { CriticalErrorScreen } from '@/components/auth/CriticalErrorScreen';
+import { LockGate } from '@/components/auth/LockGate';
+import { ErrorBoundary } from '@/components/error-boundary';
 import { bootstrapFts, db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
 import { seedMoods } from '@/db/seed';
@@ -28,28 +31,32 @@ export default function RootLayout() {
   }, [success]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <TamaguiProvider config={config} defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            {error ? (
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-                <Text>데이터베이스 초기화 실패</Text>
-                <Text>{error.message}</Text>
-              </View>
-            ) : !success ? (
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator />
-              </View>
-            ) : (
-              <>
-                <AnimatedSplashOverlay />
-                <AppTabs />
-              </>
-            )}
-          </ThemeProvider>
-        </QueryClientProvider>
-      </TamaguiProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary fallback={<CriticalErrorScreen />}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <TamaguiProvider config={config} defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+              {error ? (
+                <View
+                  style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }}
+                >
+                  <Text>데이터베이스 초기화 실패</Text>
+                  <Text>{error.message}</Text>
+                </View>
+              ) : !success ? (
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  <ActivityIndicator />
+                </View>
+              ) : (
+                <LockGate>
+                  <AnimatedSplashOverlay />
+                  <AppTabs />
+                </LockGate>
+              )}
+            </ThemeProvider>
+          </QueryClientProvider>
+        </TamaguiProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

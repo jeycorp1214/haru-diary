@@ -28,9 +28,11 @@
 - [x] `lib/auth/useBiometrics.ts`
 - [x] `lib/auth/useLockStore.ts`
 - [x] `stores/useSettingsStore.ts`
-- [ ] `components/auth/LockScreen.tsx` (시도 초과 잠금 동작 포함)
-- [ ] `components/auth/CriticalErrorScreen.tsx`
-- [ ] `app/_layout.tsx` — ErrorBoundary > Providers > LockGate > Stack 로 교체
+- [x] `components/auth/LockScreen.tsx` (PIN+생체, 시도 초과 영속 잠금 + 만료 자동해제)
+- [x] `components/auth/LockGate.tsx` (PIN 미설정 자동해제 + 백그라운드 자동잠금)
+- [x] `components/auth/CriticalErrorScreen.tsx` (순수 RN — provider 깨져도 표시)
+- [x] `components/error-boundary.tsx`
+- [x] `app/_layout.tsx` — ErrorBoundary > Providers > LockGate > AppTabs 배선
 - [ ] `app/(tabs)/_layout.tsx` + 탭 4개
 - [ ] 피드 (`(tabs)/index`) — flash-list
 - [ ] 감정 캘린더 (`(tabs)/calendar`)
