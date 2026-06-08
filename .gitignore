@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# Tamagui 빌드 캐시
+.tamagui/

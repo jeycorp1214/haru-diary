@@ -21,7 +21,7 @@
 - [x] drizzle-kit 마이그레이션 생성 (`0000_*.sql`) + Expo 연동(babel inline-import + metro sourceExts `.sql`)
 - [x] `db/client.ts` — drizzle 인스턴스 + FK pragma + FTS5 부트스트랩
 - [x] `db/seed.ts` — moods 시드 데이터 (멱등)
-- [ ] `_layout.tsx`에서 `useMigrations` 실행 → 성공 시 `bootstrapFts()` + `seedMoods()` 호출 (잠금 게이트 단계에서 연결)
+- [x] Providers + 마이그레이션 게이트 — `_layout.tsx`에 GestureHandler/Tamagui/Query Provider + `useMigrations` → 성공 시 `bootstrapFts()`+`seedMoods()`. `lib/query.ts`, `types/sql.d.ts` 추가. (잠금 게이트/라우팅 재구성은 후속)
 - [ ] `db/queries/entries.ts` — CRUD, **본문+FTS+태그 단일 트랜잭션**
 - [ ] `lib/storage/mmkv.ts` — settings/lock/cache 인스턴스
 - [ ] `lib/auth/secureStorage.ts` — PIN pbkdf2 + **시도횟수/만료 영속화**
