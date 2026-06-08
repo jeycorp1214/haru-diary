@@ -1,5 +1,5 @@
 // 일기 CRUD — 본문/태그/FTS를 단일 트랜잭션에서 동기화 (design §3 불변식)
-import { eq, sql } from 'drizzle-orm';
+import { eq, like, sql } from 'drizzle-orm';
 import * as Crypto from 'expo-crypto';
 
 import { db } from '@/db/client';
@@ -105,5 +105,14 @@ export function listEntries(opts?: { limit?: number; offset?: number }) {
     limit: opts?.limit ?? 30,
     offset: opts?.offset ?? 0,
     with: { mood: true, photos: true },
+  });
+}
+
+// 캘린더용 — 해당 월(YYYY-MM)의 일기 (감정 포함)
+export function entriesInMonth(yearMonth: string) {
+  return db.query.entries.findMany({
+    where: like(entries.entryDate, `${yearMonth}-%`),
+    with: { mood: true },
+    orderBy: (e, { asc }) => [asc(e.createdAt)],
   });
 }
