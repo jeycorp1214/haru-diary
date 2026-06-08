@@ -22,7 +22,7 @@
 - [x] `db/client.ts` — drizzle 인스턴스 + FK pragma + FTS5 부트스트랩
 - [x] `db/seed.ts` — moods 시드 데이터 (멱등)
 - [x] Providers + 마이그레이션 게이트 — `_layout.tsx`에 GestureHandler/Tamagui/Query Provider + `useMigrations` → 성공 시 `bootstrapFts()`+`seedMoods()`. `lib/query.ts`, `types/sql.d.ts` 추가. (잠금 게이트/라우팅 재구성은 후속)
-- [ ] `db/queries/entries.ts` — CRUD, **본문+FTS+태그 단일 트랜잭션**
+- [x] `db/queries/entries.ts` — create/update/delete(단일 트랜잭션: 본문+태그+FTS) + getEntry/listEntries(관계 포함). sync 드라이버라 `.run()/.get()` 동기 실행
 - [ ] `lib/storage/mmkv.ts` — settings/lock/cache 인스턴스
 - [ ] `lib/auth/secureStorage.ts` — PIN pbkdf2 + **시도횟수/만료 영속화**
 - [ ] `lib/auth/useBiometrics.ts`
