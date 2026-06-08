@@ -39,7 +39,7 @@
 - [x] 감정 캘린더 (`(tabs)/calendar`) — 월별 마킹(감정 색상 점) + 날짜 탭 상세 이동. 기기 육안확인 보류(연결 끊김)
 - [ ] 통계/설정 화면 — placeholder만
 - [x] 작성 화면 태그 입력 UI — 칩 추가/삭제 + createEntry tagNames 전달. 기기 육안확인 보류(USB 연결 불안정)
-- [ ] 탭 아이콘 (현재 라벨만)
+- [x] 탭 아이콘 (Ionicons)
 - [x] 다크모드 (themeMode 설정 연동) + i18n (ko/en, i18next + 화면 문자열 t() 전환 + 언어 토글)
 - [x] 테스트: secureStorage(PIN+시도횟수) / useLockStore (11 통과). MMKV/secure-store/crypto mock + @noble transformIgnorePatterns
 - [ ] 테스트: queries/entries (expo-sqlite 인메모리 하네스 필요 — 보류)
