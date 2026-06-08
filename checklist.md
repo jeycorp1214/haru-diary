@@ -55,7 +55,7 @@
 ## Phase 3 — 리텐션
 - [x] 연속 작성 스트릭 (currentStreak, 통계 카드). MMKV 캐시는 생략(라이브 계산)
 - [ ] 리마인더 알림 (expo-notifications)
-- [ ] JSON 내보내기/가져오기
+- [x] JSON 내보내기 (전체 일기→JSON 파일+공유, 기기 검증) — 가져오기는 후속
 - [ ] 클라우드 백업 (D-5 결정)
 
 ## Phase 4 — 프리미엄
