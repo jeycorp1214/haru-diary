@@ -33,10 +33,13 @@
 - [x] `components/auth/CriticalErrorScreen.tsx` (순수 RN — provider 깨져도 표시)
 - [x] `components/error-boundary.tsx`
 - [x] `app/_layout.tsx` — ErrorBoundary > Providers > LockGate > AppTabs 배선
-- [ ] `app/(tabs)/_layout.tsx` + 탭 4개
-- [ ] 피드 (`(tabs)/index`) — flash-list
-- [ ] 감정 캘린더 (`(tabs)/calendar`)
-- [ ] 작성/상세 (`entry/new`, `entry/[id]`)
+- [x] 라우팅 재구성 — 루트 `_layout` Stack + `(tabs)/_layout` 탭 4개. 데모(index/explore/app-tabs) 제거
+- [x] 피드 (`(tabs)/index`) — FlashList + listEntries + 작성 FAB
+- [x] 작성/상세 (`entry/new` 생성·감정선택, `entry/[id]` 조회·삭제)
+- [ ] 감정 캘린더 (`(tabs)/calendar`) — placeholder만
+- [ ] 통계/설정 화면 — placeholder만
+- [ ] 작성 화면 태그 입력 UI (queries는 지원, UI 미구현)
+- [ ] 탭 아이콘 (현재 라벨만)
 - [ ] 다크모드 + i18n (ko/en)
 - [ ] 테스트: queries / secureStorage / useLockStore
 - [ ] 빌드 검증 + 테스트 통과

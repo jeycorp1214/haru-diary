@@ -47,3 +47,12 @@
 - **prebuild 완료** — ios/android 생성. bundleId/package = `com.kwak.dev.harudiary`. scripts가 `expo run:android/ios`로 자동 변경됨(Expo Go 아닌 dev build 필요).
 - **Sentry 경고** — org/project 미설정. 실제 연동(Phase 1 후반) 시 설정.
 - **기존 스캐폴드 tsc 에러 2건** — `global.css`/`animated-icon.module.css` side-effect import 타입 누락. 사전 존재, 내 변경 무관. CSS 타입 선언 필요 시 별도 처리.
+
+## 2026-06-09 — Phase 1 DB/보안/잠금 구현
+
+- **DB 레이어** — schema(5테이블+인덱스+relations) / 마이그레이션(Expo: babel inline-import + metro .sql) / client(FK ON + FTS5 부트스트랩) / seed(moods 멱등) / queries/entries(단일 트랜잭션 CRUD).
+- **expo-sqlite sync 드라이버** — `db.transaction(cb): T` 동기 콜백. 내부 `.run()/.get()` 동기 실행(await 불가). async로 쓰면 커밋 안 됨.
+- **MMKV v4 API 변경** — nitro 기반. `new MMKV()` → `createMMKV()`, `.delete()` → `.remove()`. architecture 샘플과 다름.
+- **보안 §7 보강** — 시도횟수/잠금만료를 MMKV에 영속(`recordFailedAttempt`/`isLockedOut`). 컴포넌트 state만 쓰던 샘플의 강제종료 우회 취약점 해소.
+- **LockGate 데드락 방지** — PIN 미설정(`hasPIN` false) 시 자동 unlock. 잠금은 opt-in.
+- **⚠ Tamagui v2.1.0 + React 19 타입 마찰 (D-1 리스크 현실화)** — `<YStack flex={1} alignItems="center">` 같은 Stack shorthand 스타일 prop이 TS에서 "does not exist"로 안 잡힘. 단 `<Text fontSize="$6" color="$red10">`(토큰), `style={{...}}`(RN), `<Button>`은 정상. 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

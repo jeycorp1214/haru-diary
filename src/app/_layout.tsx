@@ -1,6 +1,6 @@
 // 앱 루트 레이아웃 — Provider 계층 + DB 마이그레이션 게이트 (잠금 게이트는 후속 단계)
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, Text, useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -9,7 +9,6 @@ import { TamaguiProvider } from 'tamagui';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 import { CriticalErrorScreen } from '@/components/auth/CriticalErrorScreen';
 import { LockGate } from '@/components/auth/LockGate';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -50,7 +49,7 @@ export default function RootLayout() {
               ) : (
                 <LockGate>
                   <AnimatedSplashOverlay />
-                  <AppTabs />
+                  <Stack screenOptions={{ headerShown: false }} />
                 </LockGate>
               )}
             </ThemeProvider>
