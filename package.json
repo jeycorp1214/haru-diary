@@ -68,6 +68,8 @@
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-kit": "^0.31.10",
     "jest-expo": "^56.0.4",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "react-test-renderer": "^19.2.3",
     "typescript": "~6.0.3"
   },
@@ -79,7 +81,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "postinstall": "patch-package"
   },
   "jest": {
     "preset": "jest-expo",
@@ -89,13 +92,6 @@
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@noble/.*))"
     ]
-  },
-  "expo": {
-    "autolinking": {
-      "exclude": [
-        "@react-native-voice/voice"
-      ]
-    }
   },
   "private": true
 }

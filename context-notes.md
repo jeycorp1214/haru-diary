@@ -81,5 +81,16 @@
 - **PIN 변경 미지원 주의** — savePIN 재호출 시 새 salt로 키 재파생 → 기존 암호화 데이터 복호화 불가. 현재 PIN 변경 플로우 없음. 추후 변경 지원하려면 재암호화 필요(문서화만).
 - **소비처** — getAutoTag(위치 좌표=PII + 날씨)를 암호화 store에 캐시. fetch/권한 실패 시 캐시 폴백(오프라인/마지막값). design §4 cache "최근 날씨" 실현.
 
+## 2026-06-09 — Phase 4 STT (@react-native-voice/voice)
+
+- **voice 3.2.4 미유지 패키지** — build.gradle이 `jcenter()`(Gradle 8 제거) + `com.android.support:appcompat-v7:28`(AndroidX 이전). 모던 RN(0.85)은 jetifier 제거 + AndroidX 전용 → 그대로 빌드 불가. Phase 0/1에서 autolinking exclude로 언링크했던 이유.
+- **Java 소스는 AndroidX 호환** — `androidx.annotation.NonNull` 사용. 즉 소스 패치 불필요, build.gradle만 문제.
+- **해결: patch-package** — (1) jcenter→mavenCentral+google 3곳 (2) `com.android.support:appcompat-v7`→`androidx.appcompat:appcompat`. node_modules 패치를 patches/로 고정, postinstall 자동 적용.
+- **new arch** — voice는 legacy bridge 모듈(TurboModule 아님). Expo SDK 56 bridgeless interop로 등록. 빌드 후 실기기 검증 필수.
+- **expo-speech는 TTS** — STT 대체 불가. voice가 유일 경로.
+- **입력 대상** — 인식 텍스트를 tentap 본문에 삽입(제목 아님). 언어는 settings i18n 연동(ko-KR/en-US). tentap에 insertAtCursor 없음 → getHTML 후 `<p>`로 append + setContent.
+- **빌드 검증됨** — `expo run:android` BUILD SUCCESSFUL. `react-native-voice_voice:compileDebugJavaWithJavac` 통과(deprecation note만), APK 설치 SM_S928N. patch-package(jcenter→mavenCentral/google, support→androidx 1.6.1, namespace 추가, manifest package 삭제) end-to-end 동작. AGP 8 namespace 요구 충족.
+- **런타임 미검증** — 음성 입력은 adb 불가라 수동. voice 3.2.4는 legacy bridge 모듈 → bridgeless(new arch) interop 등록 여부는 실제 마이크 탭으로만 확인 가능. xmldom 빌드타임 취약점은 여전히 빌드타임 전용(앱 번들 미포함), 위협 0 유지.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

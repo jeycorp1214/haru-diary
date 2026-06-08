@@ -21,12 +21,18 @@ import { createEntry } from '@/db/queries/entries';
 import { MOOD_SEED } from '@/db/seed';
 import { persistPhoto } from '@/lib/db-photo';
 import { queryClient } from '@/lib/query';
+import { useSpeechToText } from '@/lib/voice/useSpeechToText';
 import { getAutoTag, type AutoTag } from '@/lib/weather/autoTag';
 
 type PhotoDraft = { uri: string; width: number; height: number };
 
+// 에디터 HTML 삽입용 텍스트 이스케이프
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export default function NewEntryScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [moodId, setMoodId] = useState<string | null>(null);
@@ -38,6 +44,12 @@ export default function NewEntryScreen() {
 
   const editor = useEditorBridge({ autofocus: false, avoidIosKeyboard: true });
   const editorText = useEditorContent(editor, { type: 'text' });
+
+  // STT: 인식된 텍스트를 본문 끝에 단락으로 삽입
+  const stt = useSpeechToText(async (text) => {
+    const html = await editor.getHTML();
+    editor.setContent(`${html}<p>${escapeHtml(text)}</p>`);
+  });
 
   async function addLocationWeather() {
     setTagging(true);
@@ -160,6 +172,15 @@ export default function NewEntryScreen() {
           </Text>
         </Pressable>
 
+        <Pressable
+          onPress={() => (stt.isListening ? stt.stop() : stt.start(i18n.language))}
+          style={[styles.sttRow, stt.isListening && styles.sttRowActive]}>
+          <Text style={styles.locText}>
+            {stt.isListening ? `🔴 ${t('entry.sttListening')}` : `🎙️ ${t('entry.stt')}`}
+          </Text>
+        </Pressable>
+        {stt.error ? <Text style={styles.sttError}>{t('entry.sttError')}</Text> : null}
+
         {tags.length > 0 && (
           <View style={styles.chips}>
             {tags.map((tag) => (
@@ -215,6 +236,9 @@ const styles = StyleSheet.create({
   addPhotoLabel: { fontSize: 10, color: '#888' },
   locRow: { paddingVertical: 4 },
   locText: { fontSize: 14, color: '#444' },
+  sttRow: { paddingVertical: 4 },
+  sttRowActive: { opacity: 0.7 },
+  sttError: { fontSize: 12, color: '#D11' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { backgroundColor: '#208AEF11', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
   chipText: { color: '#208AEF', fontSize: 14 },

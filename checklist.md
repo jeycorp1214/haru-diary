@@ -62,8 +62,14 @@
 
 ## Phase 4 — 프리미엄
 
-- [ ] STT (@react-native-voice/voice)
-- [ ] 홈 위젯
+- [x] STT (@react-native-voice/voice)
+  - [x] voice 재활성화: patch-package로 build.gradle 수정(jcenter→mavenCentral/google, support→androidx, namespace, manifest package 제거)
+  - [x] package.json autolinking.exclude에서 voice 제거 + postinstall patch-package
+  - [x] lib/voice/useSpeechToText 훅 (start/stop/results/error + RECORD_AUDIO 권한)
+  - [x] entry/new 마이크 버튼 → 인식 텍스트 본문(tentap) 삽입
+  - [x] i18n 문자열 (ko/en)
+  - [x] 네이티브 빌드 성공(BUILD SUCCESSFUL, voice 컴파일·APK 설치 SM_S928N). 음성 인식 런타임은 수동(adb 음성 불가)
+- [ ] 홈 위젯 — 보류(사용자 결정)
 - [x] E2E 암호화 (PIN 파생키 MMKV)
   - [x] secureStorage: PIN에서 별도 salt로 암호키 파생 → SecureStore 영속 (auth 해시와 분리)
   - [x] secureMmkv: PIN 파생키로 암호화 MMKV(`secure`) 인스턴스 lifecycle (unlock/get/lock)
