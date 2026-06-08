@@ -48,7 +48,7 @@
 ## Phase 2 — 핵심 차별화
 - [ ] tentap 리치텍스트 에디터 (`components/write`)
 - [x] 사진 첨부·크롭 + documentDirectory 영구 복사(persistPhoto) + 삭제 시 파일 정리
-- [ ] 위치·날씨 자동 태깅 (`lib/weather`)
+- [x] 위치·날씨 자동 태깅 (`lib/weather`) — expo-location + OpenWeatherMap
 - [x] FTS5 검색 UI (`queries/search`) — 피드 검색바, prefix MATCH
 - [x] 감정 통계 그래프 (victory-native) — 감정 분포 막대 + 범례
 
