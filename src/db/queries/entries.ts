@@ -137,6 +137,14 @@ export function listEntries(opts?: { limit?: number; offset?: number }) {
   });
 }
 
+// 내보내기용 — 전체 일기 + 관계 (감정/사진/태그)
+export function allEntriesForExport() {
+  return db.query.entries.findMany({
+    with: { mood: true, photos: true, entryTags: { with: { tag: true } } },
+    orderBy: (e, { asc }) => [asc(e.createdAt)],
+  });
+}
+
 // 캘린더용 — 해당 월(YYYY-MM)의 일기 (감정 포함)
 export function entriesInMonth(yearMonth: string) {
   return db.query.entries.findMany({

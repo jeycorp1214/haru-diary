@@ -34,7 +34,9 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "language": "Language"
+    "language": "Language",
+    "backup": "Backup",
+    "export": "Export JSON"
   },
   "common": { "comingSoon": "Coming soon" },
   "stats": {

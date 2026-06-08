@@ -1,7 +1,8 @@
 // 설정 화면 — 테마 모드 + 언어 선택 (잠금/알림/백업은 후속)
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { exportEntriesJson } from '@/lib/backup';
 import { ThemeMode, useSettingsStore } from '@/stores/useSettingsStore';
 
 const LANGUAGES = [
@@ -25,6 +26,14 @@ export default function SettingsScreen() {
   function changeLanguage(lang: string) {
     i18n.changeLanguage(lang);
     setLanguage(lang);
+  }
+
+  async function handleExport() {
+    try {
+      await exportEntriesJson();
+    } catch (e) {
+      Alert.alert('내보내기 실패', String(e));
+    }
   }
 
   return (
@@ -62,6 +71,11 @@ export default function SettingsScreen() {
           );
         })}
       </View>
+
+      <Text style={styles.section}>{t('settings.backup')}</Text>
+      <Pressable onPress={handleExport} style={styles.button}>
+        <Text style={styles.buttonText}>{t('settings.export')}</Text>
+      </Pressable>
     </View>
   );
 }
@@ -81,4 +95,12 @@ const styles = StyleSheet.create({
   segmentItemActive: { backgroundColor: '#208AEF', borderColor: '#208AEF' },
   segmentText: { color: '#444' },
   segmentTextActive: { color: '#fff', fontWeight: '600' },
+  button: {
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#208AEF',
+    alignItems: 'center',
+  },
+  buttonText: { color: '#208AEF', fontWeight: '600' },
 });

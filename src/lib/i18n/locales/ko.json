@@ -34,7 +34,9 @@
     "themeSystem": "시스템",
     "themeLight": "라이트",
     "themeDark": "다크",
-    "language": "언어"
+    "language": "언어",
+    "backup": "백업",
+    "export": "JSON 내보내기"
   },
   "common": { "comingSoon": "준비 중" },
   "stats": {
