@@ -68,7 +68,8 @@
   - [x] lib/voice/useSpeechToText 훅 (start/stop/results/error + RECORD_AUDIO 권한)
   - [x] entry/new 마이크 버튼 → 인식 텍스트 본문(tentap) 삽입
   - [x] i18n 문자열 (ko/en)
-  - [x] 네이티브 빌드 성공(BUILD SUCCESSFUL, voice 컴파일·APK 설치 SM_S928N). 음성 인식 런타임은 수동(adb 음성 불가)
+  - [x] 네이티브 빌드 성공(BUILD SUCCESSFUL, voice 컴파일·APK 설치 SM_S928N)
+  - [ ] ⚠ 런타임 미해결 — 탭 시 즉시 "음성 인식 실패". queries 수정 후에도 지속. 보류(다음 디버깅: context-notes "STT 런타임 미해결" 가설 참조)
 - [ ] 홈 위젯 — 보류(사용자 결정)
 - [x] E2E 암호화 (PIN 파생키 MMKV)
   - [x] secureStorage: PIN에서 별도 salt로 암호키 파생 → SecureStore 영속 (auth 해시와 분리)

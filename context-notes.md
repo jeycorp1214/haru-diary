@@ -93,5 +93,17 @@
 - **런타임 미검증** — 음성 입력은 adb 불가라 수동. voice 3.2.4는 legacy bridge 모듈 → bridgeless(new arch) interop 등록 여부는 실제 마이크 탭으로만 확인 가능. xmldom 빌드타임 취약점은 여전히 빌드타임 전용(앱 번들 미포함), 위협 0 유지.
 - **버그 발견·수정: "음성 인식 실패" 즉시 표시** — Android 11+ package visibility. SpeechRecognizer가 RecognitionService를 조회하려면 manifest `<queries>`에 `android.speech.RecognitionService` intent 필요. voice config plugin은 RECORD_AUDIO만 추가하고 queries는 안 넣음 → 즉시 ERROR. **수정: `plugins/withSpeechRecognitionQuery.js` 로컬 config plugin으로 queries 주입.** prebuild로 manifest 반영 확인(line 20), 재빌드·설치. hook에 `console.warn`으로 SpeechError code 진단 출력 추가.
 
+### ⚠ STT 런타임 미해결 — 보류 (2026-06-09)
+queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음성 인식에 실패했습니다" 즉시 표시. **아직 미해결.**
+
+- **logcat 캡처 함정** — 이 macOS엔 `timeout` 없음(coreutils 미설치) → `timeout N adb logcat`은 exit 127로 안 돎(0줄 = 캡처 실패였지 "이벤트 없음"이 아님). `grep` 파이프는 블록버퍼링으로 timeout kill 시 flush 안 됨. **다음엔 `timeout` 금지, `adb logcat -d`(dump) 또는 백그라운드 streaming(timeout 없이)→파일 grep.**
+- **dev 패키지명** — `com.kwak.dev.harudiary.dev` (APP_ENV=development `.dev` 접미사). production은 `com.kwak.dev.harudiary`. pidof/검색 시 `.dev` 사용.
+- **캡처 결과(2617줄)** — SurfaceFlinger 등만, **SpeechRecognizer/RecognitionService/VoiceModule/ReactNativeJS 로그 전무**. 즉 네이티브 인식기 호출 전에 실패했거나, console.warn JS가 안 실림(새 번들 미로드 가능).
+- **다음 단계 가설(우선순위순)**:
+  1. **새 JS 번들 미로드** — console.warn 흔적 없음 → 앱이 옛 번들. metro 재시작 + 앱 완전 재시작(force-stop) 후 재확인.
+  2. **bridgeless interop 실패** — voice 3.2.4 legacy 모듈이 new arch에 미등록 → `Voice.start`가 즉시 throw → catch에서 `speech_start_failed`. 확인: `NativeModules.Voice`/`Voice.isAvailable()` 존재 여부 로그. 미등록이면 new arch 호환 포크/대체 필요.
+  3. **에러 분기 구분 안 됨** — 현재 mic_permission_denied / speech_start_failed / onSpeechError 모두 같은 UI 메시지. 임시로 raw 에러문자열을 화면에 노출해 어느 분기인지 먼저 특정할 것.
+- **검증 순서** — (a) 화면에 raw error 노출 → 분기 특정 (b) NativeModules.Voice 등록 여부 (c) 그 다음 권한/queries.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.
