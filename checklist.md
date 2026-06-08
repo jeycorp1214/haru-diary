@@ -17,10 +17,12 @@
 
 ## Phase 1 — MVP
 
-- [ ] `db/schema.ts` — entries/moods/tags/entry_tags/photos + FTS5
-- [ ] `db/client.ts` — drizzle 인스턴스 + FTS 부트스트랩
+- [x] `db/schema.ts` — entries/moods/tags/entry_tags/photos + 인덱스 5개 + relations (FTS5는 가상테이블이라 client.ts)
+- [x] drizzle-kit 마이그레이션 생성 (`0000_*.sql`) + Expo 연동(babel inline-import + metro sourceExts `.sql`)
+- [x] `db/client.ts` — drizzle 인스턴스 + FK pragma + FTS5 부트스트랩
+- [x] `db/seed.ts` — moods 시드 데이터 (멱등)
+- [ ] `_layout.tsx`에서 `useMigrations` 실행 → 성공 시 `bootstrapFts()` + `seedMoods()` 호출 (잠금 게이트 단계에서 연결)
 - [ ] `db/queries/entries.ts` — CRUD, **본문+FTS+태그 단일 트랜잭션**
-- [ ] moods 시드 데이터
 - [ ] `lib/storage/mmkv.ts` — settings/lock/cache 인스턴스
 - [ ] `lib/auth/secureStorage.ts` — PIN pbkdf2 + **시도횟수/만료 영속화**
 - [ ] `lib/auth/useBiometrics.ts`
