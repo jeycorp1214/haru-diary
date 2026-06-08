@@ -3,7 +3,8 @@ import { eq, like, sql } from 'drizzle-orm';
 import * as Crypto from 'expo-crypto';
 
 import { db } from '@/db/client';
-import { entries, entryTags, tags } from '@/db/schema';
+import { entries, entryTags, photos, tags } from '@/db/schema';
+import { deletePhotoFile } from '@/lib/db-photo';
 
 // expo-sqlite sync 드라이버: 트랜잭션 콜백은 동기. 내부 쿼리는 .run()/.get()으로 실행
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -20,6 +21,28 @@ export interface EntryInput {
   lat?: number | null;
   lng?: number | null;
   tagNames?: string[]; // 태그 이름 배열 — 없으면 생성, 연결 동기화
+  photos?: { uri: string; width?: number | null; height?: number | null }[]; // 영구 복사된 uri
+}
+
+// 사진 행 재구성 (영구 uri는 호출 전 persistPhoto로 준비된 상태)
+function syncPhotos(
+  tx: Tx,
+  entryId: string,
+  list: { uri: string; width?: number | null; height?: number | null }[],
+) {
+  tx.delete(photos).where(eq(photos.entryId, entryId)).run();
+  list.forEach((p, i) => {
+    tx.insert(photos)
+      .values({
+        id: Crypto.randomUUID(),
+        entryId,
+        uri: p.uri,
+        width: p.width ?? null,
+        height: p.height ?? null,
+        sort: i,
+      })
+      .run();
+  });
 }
 
 function entryColumns(input: EntryInput) {
@@ -62,6 +85,7 @@ export function createEntry(input: EntryInput): string {
   db.transaction((tx) => {
     tx.insert(entries).values({ id, ...entryColumns(input), createdAt: now, updatedAt: now }).run();
     syncTags(tx, id, input.tagNames ?? []);
+    syncPhotos(tx, id, input.photos ?? []);
     syncFts(tx, id, input.title ?? '', input.contentText);
   });
   return id;
@@ -74,11 +98,16 @@ export function updateEntry(id: string, input: EntryInput): void {
       .where(eq(entries.id, id))
       .run();
     syncTags(tx, id, input.tagNames ?? []);
+    syncPhotos(tx, id, input.photos ?? []);
     syncFts(tx, id, input.title ?? '', input.contentText);
   });
 }
 
 export function deleteEntry(id: string): void {
+  // 디스크의 사진 파일 정리 (DB 행은 cascade로 삭제됨)
+  const files = db.select({ uri: photos.uri }).from(photos).where(eq(photos.entryId, id)).all();
+  files.forEach((f) => deletePhotoFile(f.uri));
+
   db.transaction((tx) => {
     // entry_tags/photos는 FK cascade. FTS는 FK 밖이라 수동 삭제
     tx.run(sql`DELETE FROM entries_fts WHERE entry_id = ${id}`);

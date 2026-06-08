@@ -1,14 +1,19 @@
 // 일기 작성 화면 — 제목/본문/감정 입력 후 저장 (리치텍스트는 Phase 2)
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 
 import { createEntry } from '@/db/queries/entries';
 import { MOOD_SEED } from '@/db/seed';
+import { persistPhoto } from '@/lib/db-photo';
 import { queryClient } from '@/lib/query';
+
+type PhotoDraft = { uri: string; width: number; height: number };
 
 export default function NewEntryScreen() {
   const { t } = useTranslation();
@@ -18,6 +23,21 @@ export default function NewEntryScreen() {
   const [moodId, setMoodId] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [photos, setPhotos] = useState<PhotoDraft[]>([]);
+
+  async function pickPhoto() {
+    try {
+      const img = await ImagePicker.openPicker({ cropping: true, mediaType: 'photo' });
+      const uri = await persistPhoto(img.path);
+      setPhotos((prev) => [...prev, { uri, width: img.width, height: img.height }]);
+    } catch {
+      // 사용자가 취소한 경우 등 — 무시
+    }
+  }
+
+  function removePhoto(uri: string) {
+    setPhotos((prev) => prev.filter((p) => p.uri !== uri));
+  }
 
   function addTag() {
     const name = tagInput.trim();
@@ -39,6 +59,7 @@ export default function NewEntryScreen() {
           contentText: content,
           moodId,
           tagNames: tags,
+          photos,
         }),
       ),
     onSuccess: () => {
@@ -89,6 +110,18 @@ export default function NewEntryScreen() {
           style={styles.body}
         />
 
+        <View style={styles.photoRow}>
+          {photos.map((p) => (
+            <Pressable key={p.uri} onPress={() => removePhoto(p.uri)}>
+              <Image source={{ uri: p.uri }} style={styles.thumb} contentFit="cover" />
+            </Pressable>
+          ))}
+          <Pressable onPress={pickPhoto} style={styles.addPhoto}>
+            <Text style={styles.addPhotoIcon}>＋</Text>
+            <Text style={styles.addPhotoLabel}>{t('entry.addPhoto')}</Text>
+          </Pressable>
+        </View>
+
         {tags.length > 0 && (
           <View style={styles.chips}>
             {tags.map((tag) => (
@@ -121,6 +154,20 @@ const styles = StyleSheet.create({
   moodEmoji: { fontSize: 28 },
   title: { fontSize: 20, fontWeight: '600', paddingVertical: 8 },
   body: { fontSize: 16, minHeight: 160, textAlignVertical: 'top', lineHeight: 24 },
+  photoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  thumb: { width: 72, height: 72, borderRadius: 8 },
+  addPhoto: {
+    width: 72,
+    height: 72,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addPhotoIcon: { fontSize: 22, color: '#888' },
+  addPhotoLabel: { fontSize: 10, color: '#888' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { backgroundColor: '#208AEF11', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
   chipText: { color: '#208AEF', fontSize: 14 },

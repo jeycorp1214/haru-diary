@@ -12,6 +12,7 @@
     "title": "Title",
     "placeholder": "How was your day?",
     "tagPlaceholder": "Add tag (press enter)",
+    "addPhoto": "Add photo",
     "untitled": "Untitled",
     "notFound": "Entry not found.",
     "delete": "Delete",

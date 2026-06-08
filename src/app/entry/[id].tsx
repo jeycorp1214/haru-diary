@@ -1,6 +1,7 @@
 // 일기 상세 화면 — 본문/감정/태그 표시 + 삭제
 import { useMutation, useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -61,6 +62,13 @@ export default function EntryDetailScreen() {
           <Text style={styles.title}>{entry.title || t('entry.untitled')}</Text>
         </View>
         <Text style={styles.body}>{entry.contentText}</Text>
+        {entry.photos.length > 0 && (
+          <View style={styles.photos}>
+            {entry.photos.map((p) => (
+              <Image key={p.id} source={{ uri: p.uri }} style={styles.photo} contentFit="cover" />
+            ))}
+          </View>
+        )}
         {entry.entryTags.length > 0 && (
           <View style={styles.tags}>
             {entry.entryTags.map((et) => (
@@ -84,6 +92,8 @@ const styles = StyleSheet.create({
   emoji: { fontSize: 32 },
   title: { fontSize: 22, fontWeight: '700', flex: 1 },
   body: { fontSize: 16, lineHeight: 26 },
+  photos: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
+  photo: { width: 104, height: 104, borderRadius: 8 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   tag: { color: '#208AEF', fontSize: 14 },
   delete: { color: '#e0245e', fontSize: 16 },
