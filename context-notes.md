@@ -71,5 +71,15 @@
 - **dev client 재연결** — USB 재연결 시 Metro 끊김. `adb reverse tcp:8081 tcp:8081` + `harudiarydev://expo-development-client/?url=http://localhost:8081` 딥링크로 localhost 재접속.
 - **미검증/메모** — tentap 에디터 placeholder가 영문("Write something …") 기본값, i18n 미적용(후속). 입력 한글은 adb 불가라 수동.
 
+## 2026-06-09 — Phase 4 E2E 암호화 (PIN 파생키 MMKV)
+
+- **범위 확정** — design.md §4/§9.3 "PIN 파생키 MMKV". 일기 본문(SQLite)이 아닌 **민감 캐시용 암호화 MMKV 인스턴스** 도입. SQLite 전체 암호화(SQLCipher)는 비채택(네이티브 대공사+마이그레이션 리스크+iOS 검증 불가).
+- **암호키 ≠ auth 해시** — PIN 검증 해시(`derivePIN`)와 별도 salt(`diary_enckey_salt`)로 암호키 파생. 한쪽 유출이 다른쪽 노출로 이어지지 않게 분리.
+- **키 영속 위치** — 파생 암호키를 SecureStore(Keychain)에 저장. 이유: **생체 unlock 경로엔 PIN이 없음** → in-memory PIN 파생만으론 Face ID 사용자가 store 못 읽음. savePIN 시 1회 파생→Keychain 보관, unlock(PIN/생체 무관)은 Keychain에서 로드.
+- **MMKV 키 길이 제약** — react-native-mmkv 4.3.1: encryptionKey 문자열 AES-128 ≤16B / AES-256 ≤32B. 16B 파생 → hex 32자(=32B) + `encryptionType:'AES-256'`로 충족.
+- **lifecycle** — `secureMmkv.ts`: unlock 시 `createMMKV({id:'secure', encryptionKey, encryptionType:'AES-256'})`, lock 시 인스턴스 참조 drop(파일은 암호화된 채 잔존). PIN 미설정이면 키 없음→인스턴스 미생성(폴백 평문 경로).
+- **PIN 변경 미지원 주의** — savePIN 재호출 시 새 salt로 키 재파생 → 기존 암호화 데이터 복호화 불가. 현재 PIN 변경 플로우 없음. 추후 변경 지원하려면 재암호화 필요(문서화만).
+- **소비처** — getAutoTag(위치 좌표=PII + 날씨)를 암호화 store에 캐시. fetch/권한 실패 시 캐시 폴백(오프라인/마지막값). design §4 cache "최근 날씨" 실현.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

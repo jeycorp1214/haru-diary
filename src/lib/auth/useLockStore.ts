@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 
 import { lockStorage } from '@/lib/storage/mmkv';
+import { lockSecureStorage, unlockSecureStorage } from '@/lib/storage/secureMmkv';
 
 const LAST_AUTH_KEY = 'last_authenticated_at';
 const AUTO_LOCK_MINUTES_KEY = 'auto_lock_minutes';
@@ -23,10 +24,14 @@ export const useLockStore = create<LockStore>((set, get) => ({
   isBiometricEnabled: lockStorage.getBoolean(BIOMETRIC_ENABLED_KEY) ?? false,
   autoLockMinutes: lockStorage.getNumber(AUTO_LOCK_MINUTES_KEY) ?? 5,
 
-  lock: () => set({ isLocked: true }),
+  lock: () => {
+    lockSecureStorage();
+    set({ isLocked: true });
+  },
 
   unlock: () => {
     lockStorage.set(LAST_AUTH_KEY, Date.now());
+    void unlockSecureStorage(); // 암호 store 활성화(키 없으면 무동작)
     set({ isLocked: false });
   },
 
@@ -44,12 +49,16 @@ export const useLockStore = create<LockStore>((set, get) => ({
   checkShouldLock: () => {
     // 0 = 즉시 잠금
     if (get().autoLockMinutes === 0) {
+      lockSecureStorage();
       set({ isLocked: true });
       return;
     }
     const lastAuth = lockStorage.getNumber(LAST_AUTH_KEY) ?? 0;
     const autoLockMs = get().autoLockMinutes * 60 * 1000;
     const elapsed = Date.now() - lastAuth;
-    if (elapsed > autoLockMs) set({ isLocked: true });
+    if (elapsed > autoLockMs) {
+      lockSecureStorage();
+      set({ isLocked: true });
+    }
   },
 }));

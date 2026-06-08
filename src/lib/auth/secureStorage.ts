@@ -9,6 +9,8 @@ import { lockStorage } from '@/lib/storage/mmkv';
 
 const PIN_HASH_KEY = 'diary_pin_hash';
 const PIN_SALT_KEY = 'diary_pin_salt';
+const ENC_KEY_KEY = 'diary_enc_key'; // PIN 파생 암호화 MMKV 키 (E2E)
+const ENC_SALT_KEY = 'diary_enckey_salt'; // 암호키 전용 salt (auth 해시와 분리)
 const FAILED_ATTEMPTS_KEY = 'pin_failed_attempts';
 const LOCKOUT_UNTIL_KEY = 'pin_lockout_until';
 
@@ -36,6 +38,17 @@ export async function savePIN(pin: string) {
   const hash = await derivePIN(pin, salt);
   await SecureStore.setItemAsync(PIN_SALT_KEY, toHex(salt));
   await SecureStore.setItemAsync(PIN_HASH_KEY, hash);
+
+  // E2E: 검증 해시와 별도 salt로 암호화 MMKV 키 파생. 16B → hex 32자(AES-256 32B 한도 충족).
+  const encSalt = Crypto.getRandomBytes(16);
+  const encKey = await pbkdf2Async(sha256, pin, encSalt, { c: 100_000, dkLen: 16 });
+  await SecureStore.setItemAsync(ENC_SALT_KEY, toHex(encSalt));
+  await SecureStore.setItemAsync(ENC_KEY_KEY, toHex(encKey));
+}
+
+// 암호화 MMKV용 키 반환(hex 32자). PIN 미설정이면 null.
+export async function getEncryptionKey(): Promise<string | null> {
+  return SecureStore.getItemAsync(ENC_KEY_KEY);
 }
 
 export async function verifyPIN(pin: string): Promise<boolean> {
@@ -53,6 +66,8 @@ export async function hasPIN(): Promise<boolean> {
 export async function deletePIN() {
   await SecureStore.deleteItemAsync(PIN_HASH_KEY);
   await SecureStore.deleteItemAsync(PIN_SALT_KEY);
+  await SecureStore.deleteItemAsync(ENC_KEY_KEY);
+  await SecureStore.deleteItemAsync(ENC_SALT_KEY);
   resetAttempts();
 }
 

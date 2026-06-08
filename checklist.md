@@ -46,6 +46,7 @@
 - [ ] 빌드 검증 + 테스트 통과
 
 ## Phase 2 — 핵심 차별화
+
 - [x] tentap 리치텍스트 에디터 — entry/new 본문(content=HTML, contentText=평문)
 - [x] 사진 첨부·크롭 + documentDirectory 영구 복사(persistPhoto) + 삭제 시 파일 정리
 - [x] 위치·날씨 자동 태깅 (`lib/weather`) — expo-location + OpenWeatherMap
@@ -53,13 +54,20 @@
 - [x] 감정 통계 그래프 (victory-native) — 감정 분포 막대 + 범례
 
 ## Phase 3 — 리텐션
+
 - [x] 연속 작성 스트릭 (currentStreak, 통계 카드). MMKV 캐시는 생략(라이브 계산)
 - [x] 리마인더 알림 (expo-notifications, 매일 지정시각 DAILY)
 - [x] JSON 내보내기/가져오기 (export 공유 + import 파일선택·zod검증·삽입)
 - [x] 클라우드 백업 — Google Drive(OAuth+업로드, client ID env 게이트). iCloud는 미구현
 
 ## Phase 4 — 프리미엄
+
 - [ ] STT (@react-native-voice/voice)
-- [ ] AI 감정 인사이트 (Claude API)
 - [ ] 홈 위젯
-- [ ] E2E 암호화 (PIN 파생키 MMKV)
+- [x] E2E 암호화 (PIN 파생키 MMKV)
+  - [x] secureStorage: PIN에서 별도 salt로 암호키 파생 → SecureStore 영속 (auth 해시와 분리)
+  - [x] secureMmkv: PIN 파생키로 암호화 MMKV(`secure`) 인스턴스 lifecycle (unlock/get/lock)
+  - [x] unlock/lock 플로우 배선 (PIN·생체 경로 + 자동잠금) — useLockStore 중앙화
+  - [x] 소비처: getAutoTag 위치/날씨(PII) 캐시를 암호화 store에 + 권한거부 시 폴백
+  - [x] 테스트: 암호키 파생·라운드트립·lock 후 접근차단 (6 신규, 총 17 통과)
+  - [x] 빌드/테스트 통과 (jest 17/17, tsc 0 에러). 기기 육안확인 보류
