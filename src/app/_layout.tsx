@@ -15,6 +15,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { bootstrapFts, db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
 import { seedMoods } from '@/db/seed';
+import '@/lib/i18n';
 import { queryClient } from '@/lib/query';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import config from '../../tamagui.config';

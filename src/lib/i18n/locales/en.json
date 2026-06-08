@@ -1,0 +1,33 @@
+{
+  "tabs": { "feed": "Journal", "calendar": "Calendar", "stats": "Stats", "settings": "Settings" },
+  "feed": { "untitled": "Untitled", "empty": "No entries yet. Write your first one." },
+  "entry": {
+    "new": "New Entry",
+    "save": "Save",
+    "title": "Title",
+    "placeholder": "How was your day?",
+    "untitled": "Untitled",
+    "notFound": "Entry not found.",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete Entry",
+    "deleteConfirmMsg": "Delete this entry?",
+    "cancel": "Cancel"
+  },
+  "lock": {
+    "title": "Journal Locked",
+    "faceId": "Open with Face ID",
+    "fingerprint": "Open with fingerprint",
+    "lockedOut": "Too many attempts. Try again shortly.",
+    "lockedOut1min": "Too many attempts. Try again in 1 minute.",
+    "wrong": "Incorrect PIN. ({{count}} attempts left)"
+  },
+  "settings": {
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "language": "Language"
+  },
+  "common": { "comingSoon": "Coming soon" },
+  "mood": { "great": "Great", "good": "Good", "meh": "Meh", "bad": "Bad", "awful": "Awful" }
+}

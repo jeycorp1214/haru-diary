@@ -1,10 +1,12 @@
 // 감정 캘린더 화면 (구현 예정 — react-native-calendars 커스텀 마킹)
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function CalendarScreen() {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>캘린더 (준비 중)</Text>
+      <Text style={styles.text}>{t('common.comingSoon')}</Text>
     </View>
   );
 }

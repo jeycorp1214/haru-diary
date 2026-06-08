@@ -40,7 +40,7 @@
 - [ ] 통계/설정 화면 — placeholder만
 - [ ] 작성 화면 태그 입력 UI (queries는 지원, UI 미구현)
 - [ ] 탭 아이콘 (현재 라벨만)
-- [ ] 다크모드 + i18n (ko/en)
+- [x] 다크모드 (themeMode 설정 연동) + i18n (ko/en, i18next + 화면 문자열 t() 전환 + 언어 토글)
 - [ ] 테스트: queries / secureStorage / useLockStore
 - [ ] 빌드 검증 + 테스트 통과
 

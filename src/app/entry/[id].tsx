@@ -2,12 +2,14 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { deleteEntry, getEntry } from '@/db/queries/entries';
 import { queryClient } from '@/lib/query';
 
 export default function EntryDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
@@ -25,9 +27,9 @@ export default function EntryDetailScreen() {
   });
 
   function confirmDelete() {
-    Alert.alert('일기 삭제', '이 일기를 삭제할까요?', [
-      { text: '취소', style: 'cancel' },
-      { text: '삭제', style: 'destructive', onPress: () => remove.mutate() },
+    Alert.alert(t('entry.deleteConfirmTitle'), t('entry.deleteConfirmMsg'), [
+      { text: t('entry.cancel'), style: 'cancel' },
+      { text: t('entry.delete'), style: 'destructive', onPress: () => remove.mutate() },
     ]);
   }
 
@@ -35,7 +37,7 @@ export default function EntryDetailScreen() {
   if (!entry) {
     return (
       <View style={styles.center}>
-        <Text style={styles.muted}>일기를 찾을 수 없습니다.</Text>
+        <Text style={styles.muted}>{t('entry.notFound')}</Text>
       </View>
     );
   }
@@ -47,7 +49,7 @@ export default function EntryDetailScreen() {
           title: dayjs(entry.entryDate).format('YYYY.MM.DD'),
           headerRight: () => (
             <Pressable onPress={confirmDelete}>
-              <Text style={styles.delete}>삭제</Text>
+              <Text style={styles.delete}>{t('entry.delete')}</Text>
             </Pressable>
           ),
         }}
@@ -55,7 +57,7 @@ export default function EntryDetailScreen() {
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           {entry.mood && <Text style={styles.emoji}>{entry.mood.emoji}</Text>}
-          <Text style={styles.title}>{entry.title || '제목 없음'}</Text>
+          <Text style={styles.title}>{entry.title || t('entry.untitled')}</Text>
         </View>
         <Text style={styles.body}>{entry.contentText}</Text>
         {entry.entryTags.length > 0 && (

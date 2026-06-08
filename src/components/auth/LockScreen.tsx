@@ -1,5 +1,6 @@
 // 잠금 화면 — PIN 입력 + 생체인증. 시도 초과 시 영속 잠금(secureStorage) 반영.
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TextInput } from 'react-native';
 import { Button, Text, YStack } from 'tamagui';
 
@@ -14,6 +15,7 @@ import {
 } from '@/lib/auth/secureStorage';
 
 export function LockScreen() {
+  const { t } = useTranslation();
   const unlock = useLockStore((s) => s.unlock);
   const isBiometricEnabled = useLockStore((s) => s.isBiometricEnabled);
   const { authenticate, biometricType, isEnrolled } = useBiometrics();
@@ -59,7 +61,7 @@ export function LockScreen() {
     if (isLockedOut()) {
       setLockedOut(true);
       setPin('');
-      setError('시도 초과. 잠시 후 다시 시도하세요.');
+      setError(t('lock.lockedOut'));
       return;
     }
     if (input.length !== 4) return;
@@ -74,16 +76,16 @@ export function LockScreen() {
     setPin('');
     if (lo) {
       setLockedOut(true);
-      setError('시도 초과. 1분 후 다시 시도하세요.');
+      setError(t('lock.lockedOut1min'));
     } else {
-      setError(`PIN이 올바르지 않습니다. (남은 시도 ${attemptsLeft}회)`);
+      setError(t('lock.wrong', { count: attemptsLeft }));
     }
   }
 
   return (
     <YStack style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
       <Text fontSize="$6" fontWeight="600">
-        일기 잠금
+        {t('lock.title')}
       </Text>
 
       {error ? <Text color="$red10">{error}</Text> : null}
@@ -109,7 +111,7 @@ export function LockScreen() {
 
       {isBiometricEnabled && isEnrolled && !lockedOut && (
         <Button onPress={tryBiometric}>
-          {biometricType === 'facial' ? 'Face ID로 열기' : '지문으로 열기'}
+          {biometricType === 'facial' ? t('lock.faceId') : t('lock.fingerprint')}
         </Button>
       )}
     </YStack>

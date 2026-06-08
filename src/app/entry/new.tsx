@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { createEntry } from '@/db/queries/entries';
@@ -10,6 +11,7 @@ import { MOOD_SEED } from '@/db/seed';
 import { queryClient } from '@/lib/query';
 
 export default function NewEntryScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -38,11 +40,11 @@ export default function NewEntryScreen() {
     <>
       <Stack.Screen
         options={{
-          title: '새 일기',
+          title: t('entry.new'),
           presentation: 'modal',
           headerRight: () => (
             <Pressable disabled={!canSave} onPress={() => save.mutate()}>
-              <Text style={[styles.save, !canSave && styles.saveDisabled]}>저장</Text>
+              <Text style={[styles.save, !canSave && styles.saveDisabled]}>{t('entry.save')}</Text>
             </Pressable>
           ),
         }}
@@ -62,13 +64,13 @@ export default function NewEntryScreen() {
         <TextInput
           value={title}
           onChangeText={setTitle}
-          placeholder="제목"
+          placeholder={t('entry.title')}
           style={styles.title}
         />
         <TextInput
           value={content}
           onChangeText={setContent}
-          placeholder="오늘 하루는 어땠나요?"
+          placeholder={t('entry.placeholder')}
           multiline
           style={styles.body}
         />

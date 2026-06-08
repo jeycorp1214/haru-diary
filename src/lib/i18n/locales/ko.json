@@ -1,0 +1,33 @@
+{
+  "tabs": { "feed": "일기", "calendar": "캘린더", "stats": "통계", "settings": "설정" },
+  "feed": { "untitled": "제목 없음", "empty": "아직 일기가 없습니다. 첫 일기를 써보세요." },
+  "entry": {
+    "new": "새 일기",
+    "save": "저장",
+    "title": "제목",
+    "placeholder": "오늘 하루는 어땠나요?",
+    "untitled": "제목 없음",
+    "notFound": "일기를 찾을 수 없습니다.",
+    "delete": "삭제",
+    "deleteConfirmTitle": "일기 삭제",
+    "deleteConfirmMsg": "이 일기를 삭제할까요?",
+    "cancel": "취소"
+  },
+  "lock": {
+    "title": "일기 잠금",
+    "faceId": "Face ID로 열기",
+    "fingerprint": "지문으로 열기",
+    "lockedOut": "시도 초과. 잠시 후 다시 시도하세요.",
+    "lockedOut1min": "시도 초과. 1분 후 다시 시도하세요.",
+    "wrong": "PIN이 올바르지 않습니다. (남은 시도 {{count}}회)"
+  },
+  "settings": {
+    "theme": "테마",
+    "themeSystem": "시스템",
+    "themeLight": "라이트",
+    "themeDark": "다크",
+    "language": "언어"
+  },
+  "common": { "comingSoon": "준비 중" },
+  "mood": { "great": "최고", "good": "좋음", "meh": "보통", "bad": "별로", "awful": "최악" }
+}

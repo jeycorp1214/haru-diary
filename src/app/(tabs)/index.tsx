@@ -3,11 +3,13 @@ import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Link } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { listEntries } from '@/db/queries/entries';
 
 export default function FeedScreen() {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ['entries'],
     queryFn: () => listEntries(),
@@ -25,7 +27,7 @@ export default function FeedScreen() {
               <Text style={styles.emoji}>{item.mood?.emoji ?? '📝'}</Text>
               <View style={styles.rowBody}>
                 <Text style={styles.rowTitle} numberOfLines={1}>
-                  {item.title || '제목 없음'}
+                  {item.title || t('feed.untitled')}
                 </Text>
                 <Text style={styles.rowPreview} numberOfLines={2}>
                   {item.contentText}
@@ -38,7 +40,7 @@ export default function FeedScreen() {
         ListEmptyComponent={
           !isLoading ? (
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>아직 일기가 없습니다. 첫 일기를 써보세요.</Text>
+              <Text style={styles.emptyText}>{t('feed.empty')}</Text>
             </View>
           ) : null
         }

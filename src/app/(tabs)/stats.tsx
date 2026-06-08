@@ -1,10 +1,12 @@
 // 감정 통계 화면 (구현 예정 — victory-native 그래프)
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function StatsScreen() {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>통계 (준비 중)</Text>
+      <Text style={styles.text}>{t('common.comingSoon')}</Text>
     </View>
   );
 }
