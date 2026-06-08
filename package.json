@@ -61,6 +61,7 @@
   "devDependencies": {
     "@tamagui/babel-plugin": "^2.1.0",
     "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.2.2",
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-kit": "^0.31.10",
@@ -89,7 +90,9 @@
   },
   "expo": {
     "autolinking": {
-      "exclude": ["@react-native-voice/voice"]
+      "exclude": [
+        "@react-native-voice/voice"
+      ]
     }
   },
   "private": true
