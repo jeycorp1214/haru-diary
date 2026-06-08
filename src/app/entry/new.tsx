@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { createEntry } from '@/db/queries/entries';
 import { MOOD_SEED } from '@/db/seed';
 import { persistPhoto } from '@/lib/db-photo';
@@ -113,17 +114,15 @@ export default function NewEntryScreen() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: t('entry.new'),
-          headerShown: true,
-          presentation: 'modal',
-          headerRight: () => (
-            <Pressable disabled={!canSave} onPress={() => save.mutate()}>
-              <Text style={[styles.save, !canSave && styles.saveDisabled]}>{t('entry.save')}</Text>
-            </Pressable>
-          ),
-        }}
+      <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
+      <ScreenHeader
+        title={t('entry.new')}
+        showBack
+        right={
+          <Pressable disabled={!canSave} onPress={() => save.mutate()}>
+            <Text style={[styles.save, !canSave && styles.saveDisabled]}>{t('entry.save')}</Text>
+          </Pressable>
+        }
       />
 
       <View style={styles.header}>

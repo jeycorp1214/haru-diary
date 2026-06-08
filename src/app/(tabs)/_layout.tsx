@@ -4,6 +4,9 @@ import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import type { ColorValue } from 'react-native';
 
+import { FONT_FAMILY } from '@/lib/fonts';
+import { useSettingsStore } from '@/stores/useSettingsStore';
+
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 const icon =
@@ -14,8 +17,13 @@ const icon =
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const fontFamily = useSettingsStore((s) => s.fontFamily);
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarLabelStyle: { fontFamily: FONT_FAMILY[fontFamily] },
+      }}>
       <Tabs.Screen
         name="index"
         options={{ title: t('tabs.feed'), tabBarIcon: icon('book-outline') }}

@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { listEntries } from '@/db/queries/entries';
 import { searchEntries } from '@/db/queries/search';
 
@@ -27,6 +28,7 @@ export default function FeedScreen() {
 
   return (
     <View style={styles.container}>
+      <ScreenHeader title={t('tabs.feed')} />
       <View style={styles.searchBar}>
         <TextInput
           value={query}

@@ -5,14 +5,27 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useColorScheme, View } from 'react-native';
 import { Calendar, type DateData } from 'react-native-calendars';
+import { useTranslation } from 'react-i18next';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { entriesInMonth } from '@/db/queries/entries';
 import { moodColor } from '@/constants/mood';
+import { FONT_FAMILY, FONT_FAMILY_BOLD } from '@/lib/fonts';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 
 export default function CalendarScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const isDark = useColorScheme() === 'dark';
+  const fontKey = useSettingsStore((s) => s.fontFamily);
   const [yearMonth, setYearMonth] = useState(dayjs().format('YYYY-MM'));
+
+  // 캘린더 내부 텍스트는 RN Text 직접 생성이 아니라 라이브러리 theme로 글꼴 지정
+  const fontTheme = {
+    textDayFontFamily: FONT_FAMILY[fontKey],
+    textMonthFontFamily: FONT_FAMILY_BOLD[fontKey],
+    textDayHeaderFontFamily: FONT_FAMILY[fontKey],
+  };
 
   const { data } = useQuery({
     queryKey: ['entries', 'month', yearMonth],
@@ -38,6 +51,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <ScreenHeader title={t('tabs.calendar')} />
       <Calendar
         current={`${yearMonth}-01`}
         markedDates={marked}
@@ -46,12 +60,13 @@ export default function CalendarScreen() {
         theme={
           isDark
             ? {
+                ...fontTheme,
                 calendarBackground: '#000',
                 dayTextColor: '#fff',
                 monthTextColor: '#fff',
                 textSectionTitleColor: '#aaa',
               }
-            : undefined
+            : fontTheme
         }
       />
     </View>

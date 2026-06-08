@@ -6,6 +6,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { deleteEntry, getEntry } from '@/db/queries/entries';
 import { FONT_FAMILY } from '@/lib/fonts';
 import { queryClient } from '@/lib/query';
@@ -48,17 +49,16 @@ export default function EntryDetailScreen() {
   }
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: dayjs(entry.entryDate).format('YYYY.MM.DD'),
-          headerShown: true,
-          headerRight: () => (
-            <Pressable onPress={confirmDelete}>
-              <Text style={styles.delete}>{t('entry.delete')}</Text>
-            </Pressable>
-          ),
-        }}
+    <View style={styles.screen}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScreenHeader
+        title={dayjs(entry.entryDate).format('YYYY.MM.DD')}
+        showBack
+        right={
+          <Pressable onPress={confirmDelete}>
+            <Text style={styles.delete}>{t('entry.delete')}</Text>
+          </Pressable>
+        }
       />
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <View style={styles.header}>
@@ -105,11 +105,12 @@ export default function EntryDetailScreen() {
           </View>
         )}
       </ScrollView>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1 },
   container: { flex: 1 },
   content: { padding: 16, gap: 12 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },

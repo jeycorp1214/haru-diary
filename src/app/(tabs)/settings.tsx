@@ -6,6 +6,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { deletePIN, hasPIN } from '@/lib/auth/secureStorage';
 import { useBiometrics } from '@/lib/auth/useBiometrics';
 import { useLockStore } from '@/lib/auth/useLockStore';
@@ -123,7 +124,9 @@ export default function SettingsScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={styles.screen}>
+      <ScreenHeader title={t('tabs.settings')} />
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.section}>{t('settings.theme')}</Text>
       <View style={styles.segment}>
         {themeOptions.map((opt) => {
@@ -282,11 +285,13 @@ export default function SettingsScreen() {
           );
         })}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1 },
   container: { flex: 1 },
   content: { padding: 16, gap: 12, paddingBottom: 40 },
   section: { fontSize: 13, color: '#888', fontWeight: '600', marginTop: 8 },

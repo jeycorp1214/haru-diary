@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { savePIN } from '@/lib/auth/secureStorage';
 
 export default function PinSetupScreen() {
@@ -38,8 +39,10 @@ export default function PinSetupScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: t('lockSetup.title'), headerShown: true, presentation: 'modal' }} />
+    <View style={styles.screen}>
+      <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
+      <ScreenHeader title={t('lockSetup.title')} showBack />
+      <View style={styles.container}>
       <Text style={styles.label}>
         {step === 'enter' ? t('lockSetup.enter') : t('lockSetup.confirm')}
       </Text>
@@ -53,11 +56,13 @@ export default function PinSetupScreen() {
         autoFocus
         style={styles.input}
       />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1 },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
   label: { fontSize: 16, color: '#444' },
   error: { color: '#e0245e' },

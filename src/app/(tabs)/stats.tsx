@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { Bar, CartesianChart } from 'victory-native';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { currentStreak, moodDistribution } from '@/db/queries/stats';
 
 export default function StatsScreen() {
@@ -16,6 +17,8 @@ export default function StatsScreen() {
 
   return (
     <View style={styles.container}>
+      <ScreenHeader title={t('tabs.stats')} />
+      <View style={styles.content}>
       <View style={styles.streakCard}>
         <Text style={styles.streakLabel}>🔥 {t('stats.streak')}</Text>
         <Text style={styles.streakValue}>{t('stats.streakDays', { count: streak ?? 0 })}</Text>
@@ -52,12 +55,14 @@ export default function StatsScreen() {
       ) : (
         <Text style={styles.muted}>{t('stats.noEntries')}</Text>
       )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1 },
+  content: { flex: 1, padding: 16 },
   streakCard: {
     backgroundColor: '#208AEF11',
     borderRadius: 12,
