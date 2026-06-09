@@ -142,5 +142,13 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **HMR 함정** — ErrorBoundary 상태에선 fast-refresh가 자식 재렌더 안 함. 컴포넌트 수정 후엔 **force-stop + cold start**로 풀 번들 재요청해야 반영(상태에 따라 "1 module" delta만 와서 안 바뀜).
 - **후속** — P0 나머지 적용(Button/Icon은 작성됨, 화면 적용은 Phase C/D). 다크/라이트 토글 일관성(Unistyles adaptiveThemes ↔ nav ThemeProvider)은 화면 이전 시 함께 검증.
 
+### Phase C·D 완료 (2026-06-09)
+- **P1 컴포넌트** — SegmentedControl(설정 6곳 대체)/Card/Chip/ListRow/Input(forwardRef)/Spinner + ScreenHeader 토큰화. 전부 `StyleSheet.create((theme)=>)` 동적함수.
+- **타입 함정** — Unistyles 동적 스타일 함수 반환에 RN `TextStyle` 명시하면 `cursor` 타입 충돌(UnistylesValues와 불일치). **반환 타입 어노테이션 빼고 추론에 맡길 것.** fontWeight 같은 리터럴은 `as '600'|'400'`로 좁히기.
+- **다크모드 검증됨(기기)** — 설정에서 테마 토글 → UnistylesRuntime 동기화 → 이전 화면들 라이브 재렌더(통계/피드 다크 스크린샷). 
+- **⚠ metro 캐시 — 다중 편집 후 HMR 신뢰 불가** — 컴포넌트/스타일 여러 파일 수정하면 HMR이 "1 module" 델타만 보내고 ErrorBoundary 상태에 갇혀 검은 화면. force-stop/cold start로도 캐시 번들 받음. **확실한 복구 = metro kill + `expo start --clear` 풀 리빌드(3600+ modules)**. 편집 중간 상태가 metro 로그에 stale 에러로 남으니 "현재 파일 tsc 0"이면 캐시 탓으로 판단.
+- **이전된 화면** — settings/index(feed)/calendar/stats/entry[id]/entry/new/pin-setup + LockScreen/LockGate. 전부 하드코딩 색 제거.
+- **미이전/잔여** — DriveBackupButton(별도 컴포넌트, 추후), tentap 에디터 내부(webview), victory 차트(theme.colors.primary는 적용). P2(Switch/Modal/Toast)는 설계상 보류.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.
