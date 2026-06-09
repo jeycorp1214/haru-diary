@@ -27,6 +27,7 @@
     "keepEditing": "Keep editing",
     "notFound": "Entry not found.",
     "delete": "Delete",
+    "sharePdf": "PDF",
     "deleteConfirmTitle": "Delete Entry",
     "deleteConfirmMsg": "Delete this entry?",
     "cancel": "Cancel"
@@ -47,6 +48,7 @@
     "language": "Language",
     "backup": "Backup",
     "export": "Export JSON",
+    "exportPdf": "Export PDF",
     "import": "Import JSON",
     "importDone": "Imported {{count}} entries.",
     "exportFailed": "Export failed.",

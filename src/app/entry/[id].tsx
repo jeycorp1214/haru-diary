@@ -11,6 +11,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 import { Box, Typography } from '@/components/ui';
 import { deleteEntry, getEntry } from '@/db/queries/entries';
 import { confirm } from '@/lib/confirm';
+import { exportEntryPdf } from '@/lib/pdf';
 import { FONT_FAMILY } from '@/lib/fonts';
 import { invalidateEntryData } from '@/lib/query';
 import { queryKeys } from '@/lib/queryKeys';
@@ -23,6 +24,7 @@ const styles = StyleSheet.create((theme) => ({
   body: { color: theme.colors.text },
   photo: { width: 104, height: 104, borderRadius: 8 },
   delete: { color: theme.colors.danger, fontSize: 16 },
+  share: { color: theme.colors.primary, fontSize: 16 },
 }));
 
 export default function EntryDetailScreen() {
@@ -57,6 +59,14 @@ export default function EntryDetailScreen() {
     if (ok) remove.mutate();
   }
 
+  async function handleSharePdf() {
+    try {
+      await exportEntryPdf(id, t('entry.untitled'));
+    } catch {
+      toast.error(t('settings.exportFailed'));
+    }
+  }
+
   if (isLoading) return null;
   if (!entry) {
     return (
@@ -73,9 +83,14 @@ export default function EntryDetailScreen() {
         title={dayjs(entry.entryDate).format('YYYY.MM.DD')}
         showBack
         right={
-          <Pressable onPress={confirmDelete}>
-            <Text style={styles.delete}>{t('entry.delete')}</Text>
-          </Pressable>
+          <Box row align="center" gap="md">
+            <Pressable onPress={handleSharePdf}>
+              <Text style={styles.share}>{t('entry.sharePdf')}</Text>
+            </Pressable>
+            <Pressable onPress={confirmDelete}>
+              <Text style={styles.delete}>{t('entry.delete')}</Text>
+            </Pressable>
+          </Box>
         }
       />
       <ScrollView contentContainerStyle={styles.content}>

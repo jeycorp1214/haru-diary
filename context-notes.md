@@ -168,5 +168,15 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **⚠ 검증 위해 앱 데이터 clear함** — 이전 세션 PIN 미상 + 시도 2회 남아 브루트포스 위험 → `adb shell pm clear`로 초기화(사용자 승인). PIN/일기/설정 전부 리셋. 데이터 없는 상태에서 자동언락(LockGate hasPIN false) 정상.
 - **미검증** — 상세 본문 적용(일기 0건이라 생략). 코드 배선은 확인됨(globalFont 전역 + entry/[id] fontScale). tentap 에디터 내부는 webview라 globalFont 미적용(설계상 별도).
 
+## 2026-06-09 — PDF 내보내기 (설계 외 요청)
+
+- **방식 = expo-print** — `Print.printToFileAsync({ html })` → PDF 파일 → 기존 `Sharing.shareAsync`(JSON 내보내기와 동일 패턴). expo-print 56.0.3, autolink(config plugin 불필요), 네이티브 재빌드만 필요.
+- **`lib/pdf.ts`** — entrySectionHtml(e, untitled): 날짜/감정emoji/제목/위치·날씨/본문/사진/태그 → HTML. 본문은 tentap이 저장한 `content`(HTML) 그대로 사용(`getHTML()` 출력이라 클린). content 없으면 contentText 폴백. wrapHtml: 한글 시스템폰트(-apple-system, Noto Sans KR) + `page-break-after`로 일기마다 페이지 분리. exportEntriesPdf(전체)/exportEntryPdf(단일).
+- **사진 base64 임베드** — Android `<img>`는 `file://` 미지원 → `new File(uri).base64()`(expo-fs 56 신규 API)로 data URI 변환. 실패 시 해당 사진만 skip.
+- **i18n 처리** — pdf.ts는 t() 없으니 호출부(settings/entry[id])에서 `t('entry.untitled')` 주입(untitled 파라미터). 신규 키: settings.exportPdf, entry.sharePdf.
+- **UI** — 설정 백업 섹션 "PDF 내보내기"(전체) + entry/[id] 헤더 "PDF" 버튼(단일, 삭제 옆 Box row).
+- **실기기 검증(emulator-5554)** — 영문 테스트 일기 작성 후 단일/전체 둘 다 Android 공유 시트("Sharing 1 file" + *.pdf) 정상. cache/Print/에 PDF 생성. pull해서 %PDF-1.4·28KB 확인 + macOS `qlmanage -t`로 렌더 확인(날짜 회색/이모지/제목 굵게/본문/HTML 스타일 정확).
+- **미실행 경로** — 사진 base64(사진 없는 일기로 테스트). 코드는 작성됨. 한글 본문 PDF(adb 한글 입력 불가로 영문 사용했으나 webview 시스템폰트라 한글 렌더 문제 없음 — 설정 프리뷰 등에서 기검증).
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

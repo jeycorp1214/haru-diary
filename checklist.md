@@ -96,6 +96,13 @@
 - [x] 설정: 화면 잠금 — PIN 설정/해제(pin-setup 모달) + 생체 토글 + 자동잠금 시간
 - [x] 설정: 글자 스타일 — 크기 4단계 + 글꼴 4종(기본/고딕/명조/손글씨, 한글 Google Fonts) + 라이브 프리뷰. 상세 본문에 적용
   - [x] 실기기 육안 검증(emulator-5554): 잠금화면 손글씨 렌더 + PIN 오입력 시도횟수 카운트 동작 / 설정 글꼴 4종 버튼 자기폰트 렌더 / 손글씨 선택 시 전역 라이브 반영(제목·라벨·버튼·탭바·프리뷰) / 아주크게 크기 스케일. 상세 본문 적용은 코드 배선 확인(globalFont 전역 패치 + fontScale)
+- [x] PDF 내보내기 (전체+단일, 사진 base64 포함, 본문 HTML 서식 유지)
+  - [x] `lib/pdf.ts` — entrySectionHtml(감정/제목/날짜/위치·날씨/HTML본문/사진base64/태그) + exportEntriesPdf(전체) + exportEntryPdf(단일). expo-print printToFileAsync → Sharing
+  - [x] settings: "PDF 내보내기" 버튼 (백업 섹션)
+  - [x] entry/[id]: 헤더 PDF 버튼 (단일)
+  - [x] i18n ko/en 문자열 (settings.exportPdf, entry.sharePdf)
+  - [x] expo-print 56.0.3 설치 + 네이티브 재빌드 (BUILD SUCCESSFUL 19s)
+  - [x] 실기기 검증(emulator-5554): 단일·전체 둘 다 공유 시트 정상 + PDF 유효(%PDF-1.4, 28KB) + qlmanage 렌더 확인(날짜/감정/제목/본문/HTML 스타일 정확). 사진 base64는 코드 작성(사진 없는 일기로 테스트라 임베드 경로 미실행)
 - [x] E2E 암호화 (PIN 파생키 MMKV)
   - [x] secureStorage: PIN에서 별도 salt로 암호키 파생 → SecureStore 영속 (auth 해시와 분리)
   - [x] secureMmkv: PIN 파생키로 암호화 MMKV(`secure`) 인스턴스 lifecycle (unlock/get/lock)

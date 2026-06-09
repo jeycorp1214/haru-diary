@@ -17,6 +17,7 @@ import { useBiometrics } from '@/lib/auth/useBiometrics';
 import { useLockStore } from '@/lib/auth/useLockStore';
 import { exportEntriesJson, importEntriesJson } from '@/lib/backup';
 import { isDriveConfigured } from '@/lib/cloud/googleDrive';
+import { exportEntriesPdf } from '@/lib/pdf';
 import { FONT_FAMILY, FONT_KEYS, FONT_SCALES, type FontKey } from '@/lib/fonts';
 import { cancelReminder, ensureNotificationPermission, scheduleDailyReminder } from '@/lib/notifications';
 import { ThemeMode, useSettingsStore } from '@/stores/useSettingsStore';
@@ -117,6 +118,14 @@ export default function SettingsScreen() {
     }
   }
 
+  async function handleExportPdf() {
+    try {
+      await exportEntriesPdf(t('entry.untitled'));
+    } catch {
+      toast.error(t('settings.exportFailed'));
+    }
+  }
+
   async function handleImport() {
     try {
       const n = await importEntriesJson();
@@ -208,6 +217,9 @@ export default function SettingsScreen() {
         <Section title={t('settings.backup')} />
         <Button variant="outline" onPress={handleExport}>
           {t('settings.export')}
+        </Button>
+        <Button variant="outline" onPress={handleExportPdf}>
+          {t('settings.exportPdf')}
         </Button>
         <Button variant="outline" onPress={handleImport}>
           {t('settings.import')}
