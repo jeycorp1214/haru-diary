@@ -84,9 +84,9 @@
 - [x] lab.tsx / tamagui.config.ts 삭제, tamagui deps 4개 제거
 - [x] prebuild + 빌드 검증 (BUILD SUCCESSFUL 1m27s, unistyles+edge-to-edge 네이티브 통합). 런타임 육안확인 보류
 - [x] React Query 표준화 — queryKeys 팩토리 + 기본값 + 통계 무효화 버그 수정
-- [ ] 공통 컴포넌트 시스템 (설계: `components.md`)
-  - [ ] Phase A — 토큰 확장(semantic colors/spacing/typography variants/radius pill)
-  - [ ] Phase B — P0: Box / Typography / Button / Icon
+- [x] 공통 컴포넌트 시스템 (설계: `components.md`)
+  - [x] Phase A — 토큰 확장(semantic colors/spacing/typography variants/radius pill)
+  - [x] Phase B — P0: Box / Typography / Button / Icon
   - [x] Phase C — P1: SegmentedControl/Card/Chip/ListRow/Input/Header토큰화/Spinner
   - [x] Phase D — 화면 이전(설정/피드/캘린더/통계/상세/작성/pin-setup). 다크모드 기기 검증(피드/통계 스크린샷)
   - [x] Phase E — 피드백 레이어: Toast(싱글톤)/ConfirmDialog(Promise)/Switch + useUnsavedGuard(작성 이탈). Alert 전부 대체. 부팅 검증, 인터랙션은 수동
