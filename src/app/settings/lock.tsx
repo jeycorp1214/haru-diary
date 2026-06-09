@@ -6,9 +6,8 @@ import { ScrollView } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { Box, Button, SegmentedControl, Switch, Typography } from '@/components/ui';
-import { confirm } from '@/lib/confirm';
-import { deletePIN, hasPIN } from '@/lib/auth/secureStorage';
+import { Box, SegmentedControl, Switch, Typography } from '@/components/ui';
+import { hasPIN } from '@/lib/auth/secureStorage';
 import { useBiometrics } from '@/lib/auth/useBiometrics';
 import { useLockStore } from '@/lib/auth/useLockStore';
 
@@ -35,23 +34,9 @@ export default function LockSettings() {
     }, []),
   );
 
-  async function toggleLock() {
-    if (!pinSet) {
-      router.push('/pin-setup');
-      return;
-    }
-    const ok = await confirm({
-      title: t('settings.removePinTitle'),
-      message: t('settings.removePinMsg'),
-      confirmLabel: t('settings.remove'),
-      cancelLabel: t('entry.cancel'),
-      destructive: true,
-    });
-    if (ok) {
-      await deletePIN();
-      setBiometricEnabled(false);
-      setPinSet(false);
-    }
+  function toggleLock() {
+    // 켜기: PIN 설정. 끄기: 현재 PIN 검증 화면 경유(삭제는 거기서). 복귀 시 useFocusEffect로 상태 갱신.
+    router.push(pinSet ? '/pin-verify' : '/pin-setup');
   }
 
   const autoLockOptions = AUTO_LOCK_MINUTES.map((m) => ({
@@ -63,9 +48,10 @@ export default function LockSettings() {
     <Box flex={1} bg="surface">
       <ScreenHeader title={t('settings.lock')} showBack />
       <ScrollView contentContainerStyle={styles.content}>
-        <Button variant="outline" onPress={toggleLock}>
-          {pinSet ? t('settings.lockOnRemove') : t('settings.lockSet')}
-        </Button>
+        <Box row align="center" justify="space-between" py="xs">
+          <Typography variant="body">{t('settings.pinLabel')}</Typography>
+          <Switch value={pinSet} onValueChange={() => toggleLock()} />
+        </Box>
         {pinSet && biometricUsable && (
           <Box row align="center" justify="space-between" py="xs">
             <Typography variant="body">{t('settings.biometric')}</Typography>

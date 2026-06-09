@@ -43,7 +43,12 @@
     "fingerprint": "지문으로 열기",
     "lockedOut": "시도 초과. 잠시 후 다시 시도하세요.",
     "lockedOut1min": "시도 초과. 1분 후 다시 시도하세요.",
-    "wrong": "PIN이 올바르지 않습니다. (남은 시도 {{count}}회)"
+    "wrong": "PIN이 올바르지 않습니다. (남은 시도 {{count}}회)",
+    "forgotHint": "비밀번호를 잊으셨나요?",
+    "resetData": "모든 데이터 삭제 후 초기화",
+    "resetTitle": "데이터 초기화",
+    "resetMsg": "비밀번호는 복구할 수 없습니다. 계속하면 모든 일기와 설정이 영구 삭제되고 잠금이 해제됩니다.",
+    "resetConfirm": "삭제"
   },
   "settings": {
     "theme": "테마",
@@ -96,13 +101,16 @@
     "themeDesc": "시스템 · 라이트 · 다크",
     "fontDesc": "크기 · 글꼴",
     "languageDesc": "한국어 · English",
-    "backupDesc": "내보내기 · 가져오기 · Drive"
+    "backupDesc": "내보내기 · 가져오기 · Drive",
+    "pinLabel": "비밀번호"
   },
   "lockSetup": {
     "title": "PIN 설정",
     "enter": "새 PIN 4자리를 입력하세요",
     "confirm": "확인을 위해 다시 입력하세요",
-    "mismatch": "PIN이 일치하지 않습니다. 다시 시도하세요."
+    "mismatch": "PIN이 일치하지 않습니다. 다시 시도하세요.",
+    "removeEnter": "현재 PIN을 입력하세요",
+    "removeWrong": "PIN이 올바르지 않습니다."
   },
   "notification": {
     "title": "오늘의 일기",

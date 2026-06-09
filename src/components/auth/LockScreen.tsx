@@ -1,9 +1,12 @@
 // 잠금 화면 — PIN 입력 + 생체인증. 시도 초과 시 영속 잠금(secureStorage) 반영.
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
+import { PinKeypad } from '@/components/auth/PinKeypad';
+import { confirm } from '@/lib/confirm';
+import { factoryReset } from '@/lib/reset';
 import { useBiometrics } from '@/lib/auth/useBiometrics';
 import { useLockStore } from '@/lib/auth/useLockStore';
 import {
@@ -55,6 +58,20 @@ export function LockScreen() {
     }
   }
 
+  // 비밀번호 분실 — 복구 불가. 전체 데이터 삭제 후 잠금 해제(마지막 수단).
+  async function handleReset() {
+    const ok = await confirm({
+      title: t('lock.resetTitle'),
+      message: t('lock.resetMsg'),
+      confirmLabel: t('lock.resetConfirm'),
+      cancelLabel: t('entry.cancel'),
+      destructive: true,
+    });
+    if (!ok) return;
+    await factoryReset();
+    unlock();
+  }
+
   async function handlePINChange(input: string) {
     setError('');
     setPin(input);
@@ -84,28 +101,28 @@ export function LockScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('lock.title')}</Text>
+      <View style={styles.center}>
+        <Text style={styles.title}>{t('lock.title')}</Text>
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <TextInput
-        value={pin}
-        onChangeText={handlePINChange}
-        keyboardType="number-pad"
-        maxLength={4}
-        secureTextEntry
-        autoFocus
-        editable={!lockedOut}
-        style={styles.input}
-      />
+        <PinKeypad value={pin} onChange={handlePINChange} disabled={lockedOut} />
 
-      {isBiometricEnabled && isEnrolled && !lockedOut && (
-        <Pressable onPress={tryBiometric} style={styles.bioButton}>
-          <Text style={styles.bioButtonText}>
-            {biometricType === 'facial' ? t('lock.faceId') : t('lock.fingerprint')}
-          </Text>
+        {isBiometricEnabled && isEnrolled && !lockedOut && (
+          <Pressable onPress={tryBiometric} style={styles.bioButton}>
+            <Text style={styles.bioButtonText}>
+              {biometricType === 'facial' ? t('lock.faceId') : t('lock.fingerprint')}
+            </Text>
+          </Pressable>
+        )}
+      </View>
+
+      <View style={styles.footer}>
+        <Text style={styles.forgotHint}>{t('lock.forgotHint')}</Text>
+        <Pressable onPress={handleReset} hitSlop={8}>
+          <Text style={styles.resetText}>{t('lock.resetData')}</Text>
         </Pressable>
-      )}
+      </View>
     </View>
   );
 }
@@ -113,24 +130,20 @@ export function LockScreen() {
 const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: theme.space(2),
     padding: theme.space(3),
     backgroundColor: theme.colors.background,
   },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.space(2),
+  },
+  footer: { alignItems: 'center', gap: theme.space(1), paddingBottom: theme.space(4) },
+  forgotHint: { fontSize: theme.fontSize.sm, color: theme.colors.textMuted },
+  resetText: { fontSize: theme.fontSize.md, fontWeight: '600', color: theme.colors.danger },
   title: { fontSize: theme.fontSize.lg, fontWeight: '600', color: theme.colors.text },
   error: { color: theme.colors.danger },
-  input: {
-    width: 160,
-    fontSize: theme.fontSize.xl,
-    letterSpacing: 12,
-    textAlign: 'center',
-    borderBottomWidth: 1,
-    borderColor: theme.colors.border,
-    paddingVertical: theme.space(1),
-    color: theme.colors.text,
-  },
   bioButton: {
     paddingHorizontal: theme.space(2.5),
     paddingVertical: theme.space(1.25),

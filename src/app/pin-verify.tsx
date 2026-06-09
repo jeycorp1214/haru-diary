@@ -1,4 +1,4 @@
-// PIN 설정 화면 — 4자리 입력 후 확인 재입력 일치 시 savePIN (화면 잠금 활성화)
+// 화면 잠금 끄기 — 현재 PIN 검증 후 삭제. 표준대로 비밀번호 확인 요구.
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { PinKeypad } from '@/components/auth/PinKeypad';
 import { Box, Typography } from '@/components/ui';
-import { savePIN } from '@/lib/auth/secureStorage';
+import { deletePIN, verifyPIN } from '@/lib/auth/secureStorage';
+import { useLockStore } from '@/lib/auth/useLockStore';
 
-export default function PinSetupScreen() {
+export default function PinVerifyScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [step, setStep] = useState<'enter' | 'confirm'>('enter');
-  const [first, setFirst] = useState('');
+  const setBiometricEnabled = useLockStore((s) => s.setBiometricEnabled);
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
 
@@ -21,31 +21,22 @@ export default function PinSetupScreen() {
     setPin(input);
     if (input.length !== 4) return;
 
-    if (step === 'enter') {
-      setFirst(input);
-      setStep('confirm');
-      setPin('');
+    if (await verifyPIN(input)) {
+      await deletePIN();
+      setBiometricEnabled(false);
+      router.back();
       return;
     }
-    if (input === first) {
-      await savePIN(input);
-      router.back();
-    } else {
-      setError(t('lockSetup.mismatch'));
-      setStep('enter');
-      setFirst('');
-      setPin('');
-    }
+    setPin('');
+    setError(t('lockSetup.removeWrong'));
   }
 
   return (
     <Box flex={1} bg="surface">
       <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
-      <ScreenHeader title={t('lockSetup.title')} showBack />
+      <ScreenHeader title={t('settings.removePinTitle')} showBack />
       <Box flex={1} align="center" justify="center" gap="md" p="lg">
-        <Typography variant="body">
-          {step === 'enter' ? t('lockSetup.enter') : t('lockSetup.confirm')}
-        </Typography>
+        <Typography variant="body">{t('lockSetup.removeEnter')}</Typography>
         {error ? (
           <Typography variant="body" color="danger">
             {error}

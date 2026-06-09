@@ -43,7 +43,12 @@
     "fingerprint": "Open with fingerprint",
     "lockedOut": "Too many attempts. Try again shortly.",
     "lockedOut1min": "Too many attempts. Try again in 1 minute.",
-    "wrong": "Incorrect PIN. ({{count}} attempts left)"
+    "wrong": "Incorrect PIN. ({{count}} attempts left)",
+    "forgotHint": "Forgot your passcode?",
+    "resetData": "Erase all data & reset",
+    "resetTitle": "Erase all data",
+    "resetMsg": "Your passcode cannot be recovered. Continuing permanently deletes all diary entries and settings, then unlocks the app.",
+    "resetConfirm": "Erase"
   },
   "settings": {
     "theme": "Theme",
@@ -96,13 +101,16 @@
     "themeDesc": "System · Light · Dark",
     "fontDesc": "Size · Font",
     "languageDesc": "한국어 · English",
-    "backupDesc": "Export · Import · Drive"
+    "backupDesc": "Export · Import · Drive",
+    "pinLabel": "Passcode"
   },
   "lockSetup": {
     "title": "Set PIN",
     "enter": "Enter a new 4-digit PIN",
     "confirm": "Re-enter to confirm",
-    "mismatch": "PINs do not match. Try again."
+    "mismatch": "PINs do not match. Try again.",
+    "removeEnter": "Enter your current PIN",
+    "removeWrong": "Incorrect PIN."
   },
   "notification": {
     "title": "Today's journal",
