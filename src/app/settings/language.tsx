@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { Box, SegmentedControl } from '@/components/ui';
+import { Box, Card, RadioGroup } from '@/components/ui';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
 const styles = StyleSheet.create(() => ({
@@ -30,7 +30,9 @@ export default function LanguageSettings() {
     <Box flex={1} bg="surface">
       <ScreenHeader title={t('settings.language')} showBack />
       <ScrollView contentContainerStyle={styles.content}>
-        <SegmentedControl options={langOptions} value={language} onChange={changeLanguage} />
+        <Card>
+          <RadioGroup options={langOptions} value={language} onChange={changeLanguage} />
+        </Card>
       </ScrollView>
     </Box>
   );
