@@ -122,5 +122,16 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **화면 잠금 UI** — 기존 인프라(secureStorage savePIN/hasPIN/deletePIN, useLockStore, useBiometrics) 재사용. PIN 설정은 `app/pin-setup.tsx` 모달(4자리 입력→확인 재입력 일치 시 savePIN). 설정탭은 `useFocusEffect`로 복귀 시 hasPIN 재확인. 생체 토글은 PIN 설정+생체 가용 시만 노출, PIN 삭제 시 생체도 off. 자동잠금 0(즉시)/1/5/10분.
 - **PIN 변경 주의(E2E와 연계)** — savePIN 재호출 시 [[2026-06-09 — Phase 4 E2E 암호화]] 암호키 재파생됨. 현재 잠금 끄기=deletePIN→재설정 경로뿐이라 암호 store 데이터는 어차피 폐기. 별도 "PIN 변경" 플로우 추가 시 재암호화 필요(기존 메모 유효).
 
+## 2026-06-09 — UI 스택 교체: Tamagui 제거 → Unistyles v3
+
+- **근본 원인 규명(probe로 확정)** — Tamagui 2.1.0의 `StackStyleBase`에 RN 0.85 ViewStyle이 안 병합됨 → YStack/XStack의 flex/padding/gap/alignItems/backgroundColor가 타입에 없음("does not exist"/"not assignable"). `typeof config`는 정상(tokens 있음), `TamaguiCustomConfig` augment를 'tamagui'·'@tamagui/web' 둘 다 시도해도 무효. **config 실수 아닌 Tamagui↔RN0.85 버전 비호환.** Text 토큰/Button/Separator는 통과(런타임은 전부 정상, TS만 막힘).
+- **RN 다운그레이드 비채택** — RN 0.85는 Expo SDK 56 고정 → SDK 통째 다운그레이드 수반(DB/voice/폰트/잠금/prebuild 전부 재구성). 공짜 우회(style={{}}) 있는 미관 문제로 스택 후퇴는 비용과다.
+- **대안 = Unistyles v3 (3.2.5)** — StyleSheet.create((theme)=>...) API라 기존 RN StyleSheet에서 마이그레이션 최소. peer: rn>=0.76, nitro(MMKV로 기설치), reanimated(기설치), edge-to-edge. RN 0.85 호환.
+- **설치/설정** — `react-native-unistyles` + `react-native-edge-to-edge`. babel: `@tamagui/babel-plugin` 제거 → `['react-native-unistyles/plugin', {root:'src'}]`. `src/unistyles.ts`에 light/dark 테마(colors/space/radius/fontSize) + breakpoints + `StyleSheet.configure({adaptiveThemes:true})`. `_layout` 최상단 `import '@/unistyles'`.
+- **edge-to-edge는 config plugin 아님** — app.json plugins에 넣으면 "valid config plugin 아님" 에러(Expo56 edge-to-edge 기본 내장). 네이티브 모듈은 autolink만. plugins에서 뺌.
+- **테마 동기화** — 기존 `useSettingsStore.themeMode`(system/light/dark) → `_layout`에서 `UnistylesRuntime.setAdaptiveThemes/setTheme`로 연결.
+- **변환됨** — LockScreen/LockGate를 tamagui(YStack/Text/Button) → RN + Unistyles StyleSheet. lab.tsx/tamagui.config.ts 삭제, tamagui deps 4개 제거.
+- **후속** — 나머지 화면(feed/calendar/stats/settings/entry/[id]/new/pin-setup/ScreenHeader)은 아직 평문 StyleSheet(하드코딩 색). Unistyles 테마로 점진 이전 예정. 현재는 plain StyleSheet와 Unistyles 공존.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

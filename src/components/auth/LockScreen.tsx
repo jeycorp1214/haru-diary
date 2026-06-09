@@ -1,8 +1,8 @@
 // 잠금 화면 — PIN 입력 + 생체인증. 시도 초과 시 영속 잠금(secureStorage) 반영.
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TextInput } from 'react-native';
-import { Button, Text, YStack } from 'tamagui';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { useBiometrics } from '@/lib/auth/useBiometrics';
 import { useLockStore } from '@/lib/auth/useLockStore';
@@ -83,12 +83,10 @@ export function LockScreen() {
   }
 
   return (
-    <YStack style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
-      <Text fontSize="$6" fontWeight="600">
-        {t('lock.title')}
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('lock.title')}</Text>
 
-      {error ? <Text color="$red10">{error}</Text> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <TextInput
         value={pin}
@@ -98,22 +96,46 @@ export function LockScreen() {
         secureTextEntry
         autoFocus
         editable={!lockedOut}
-        style={{
-          width: 160,
-          fontSize: 28,
-          letterSpacing: 12,
-          textAlign: 'center',
-          borderBottomWidth: 1,
-          borderColor: '#ccc',
-          paddingVertical: 8,
-        }}
+        style={styles.input}
       />
 
       {isBiometricEnabled && isEnrolled && !lockedOut && (
-        <Button onPress={tryBiometric}>
-          {biometricType === 'facial' ? t('lock.faceId') : t('lock.fingerprint')}
-        </Button>
+        <Pressable onPress={tryBiometric} style={styles.bioButton}>
+          <Text style={styles.bioButtonText}>
+            {biometricType === 'facial' ? t('lock.faceId') : t('lock.fingerprint')}
+          </Text>
+        </Pressable>
       )}
-    </YStack>
+    </View>
   );
 }
+
+const styles = StyleSheet.create((theme) => ({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.space(2),
+    padding: theme.space(3),
+    backgroundColor: theme.colors.background,
+  },
+  title: { fontSize: theme.fontSize.lg, fontWeight: '600', color: theme.colors.text },
+  error: { color: theme.colors.danger },
+  input: {
+    width: 160,
+    fontSize: theme.fontSize.xl,
+    letterSpacing: 12,
+    textAlign: 'center',
+    borderBottomWidth: 1,
+    borderColor: theme.colors.border,
+    paddingVertical: theme.space(1),
+    color: theme.colors.text,
+  },
+  bioButton: {
+    paddingHorizontal: theme.space(2.5),
+    paddingVertical: theme.space(1.25),
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.brand,
+  },
+  bioButtonText: { color: '#fff', fontWeight: '600' },
+}));

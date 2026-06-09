@@ -72,6 +72,19 @@
   - [x] 런타임 동작 확인(실기기 음성 인식 성공). 모듈명 불일치(RCTVoice vs Voice) JS 패치로 해결
 - [ ] 홈 위젯 — 보류(사용자 결정)
 
+## UI 스택 교체 — Tamagui 제거 + Unistyles v3 채택
+
+> 이유: Tamagui 2.1.0 ↔ RN 0.85 타입 비호환(Stack style prop 미반영). RN 다운그레이드는 비용과다 → Unistyles v3로 교체.
+
+- [x] Unistyles 설치: react-native-unistyles@3.2.5 + react-native-edge-to-edge (nitro/reanimated 기존)
+- [x] babel: @tamagui/babel-plugin 제거 → react-native-unistyles/plugin 추가
+- [x] `src/unistyles.ts`: light/dark 테마 토큰 + breakpoints + StyleSheet.configure(adaptiveThemes)
+- [x] `_layout.tsx`: TamaguiProvider 제거 + `import '@/unistyles'` + themeMode→UnistylesRuntime 동기화
+- [x] LockScreen/LockGate: tamagui(YStack/Text/Button) → Unistyles StyleSheet
+- [x] lab.tsx / tamagui.config.ts 삭제, tamagui deps 4개 제거
+- [x] prebuild + 빌드 검증 (BUILD SUCCESSFUL 1m27s, unistyles+edge-to-edge 네이티브 통합). 런타임 육안확인 보류
+- [ ] (후속) 나머지 화면 StyleSheet → Unistyles 테마 점진 이전
+
 ## 추가 기능 (설계 외 요청)
 
 - [x] 설정: 화면 잠금 — PIN 설정/해제(pin-setup 모달) + 생체 토글 + 자동잠금 시간

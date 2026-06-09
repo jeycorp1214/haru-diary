@@ -1,11 +1,12 @@
 // 앱 루트 레이아웃 — Provider 계층 + DB 마이그레이션 게이트 (잠금 게이트는 후속 단계)
+import '@/unistyles'; // Unistyles 설정 — 다른 import보다 먼저 1회 실행
 import { useFonts } from 'expo-font';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, Text, useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { TamaguiProvider } from 'tamagui';
+import { UnistylesRuntime } from 'react-native-unistyles';
 
 import { QueryClientProvider } from '@tanstack/react-query';
 
@@ -21,7 +22,6 @@ import { setGlobalFont } from '@/lib/globalFont';
 import '@/lib/i18n';
 import { queryClient } from '@/lib/query';
 import { useSettingsStore } from '@/stores/useSettingsStore';
-import config from '../../tamagui.config';
 
 export default function RootLayout() {
   const systemScheme = useColorScheme();
@@ -34,6 +34,16 @@ export default function RootLayout() {
   // 전역 기본 글꼴 지정(자식 렌더 전에 설정). 변경 시 아래 Stack key로 remount해 라이브 반영.
   setGlobalFont(FONT_FAMILY[fontFamily], FONT_FAMILY_BOLD[fontFamily]);
 
+  // 앱 테마 설정(themeMode) → Unistyles 동기화. system이면 OS 추종, 아니면 고정.
+  useEffect(() => {
+    if (themeMode === 'system') {
+      UnistylesRuntime.setAdaptiveThemes(true);
+    } else {
+      UnistylesRuntime.setAdaptiveThemes(false);
+      UnistylesRuntime.setTheme(themeMode);
+    }
+  }, [themeMode]);
+
   // 마이그레이션 성공 후 FTS 가상테이블 보장 + 감정 시드(멱등)
   useEffect(() => {
     if (!success) return;
@@ -44,7 +54,6 @@ export default function RootLayout() {
   return (
     <ErrorBoundary fallback={<CriticalErrorScreen />}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <TamaguiProvider config={config} defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
               {error ? (
@@ -66,7 +75,6 @@ export default function RootLayout() {
               )}
             </ThemeProvider>
           </QueryClientProvider>
-        </TamaguiProvider>
       </GestureHandlerRootView>
     </ErrorBoundary>
   );
