@@ -64,7 +64,7 @@
     "exportFailed": "Export failed.",
     "importFailed": "Import failed.",
     "notifyPermission": "Please allow notifications in Settings.",
-    "reminder": "Writing reminder",
+    "reminder": "Diary reminders",
     "reminderOff": "Off",
     "cloudBackup": "Google Drive backup",
     "cloudDone": "Backed up to Drive.",
@@ -97,7 +97,7 @@
     "groupData": "Data",
     "backupRestore": "Backup / Restore",
     "lockDesc": "PIN · Biometrics · Auto-lock",
-    "reminderDesc": "Daily reminder time",
+    "reminderDesc": "Daily diary reminders",
     "themeDesc": "System · Light · Dark",
     "fontDesc": "Size · Font",
     "languageDesc": "한국어 · English",
@@ -114,7 +114,15 @@
   },
   "notification": {
     "title": "Today's journal",
-    "body": "Take a moment to write today."
+    "body": "Take a moment to write today.",
+    "am": "AM",
+    "pm": "PM",
+    "add": "Add reminder",
+    "addTitle": "Add reminder",
+    "empty": "No reminders yet.",
+    "hour": "Hour",
+    "minute": "Minute",
+    "confirm": "Add"
   },
   "common": {
     "comingSoon": "Coming soon"

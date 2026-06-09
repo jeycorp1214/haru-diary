@@ -1,4 +1,4 @@
-// 앱 설정 전역 스토어 (테마/폰트/언어/알림시각) — MMKV 영속 (design §5)
+// 앱 설정 전역 스토어 (테마/폰트/언어/알림시각 목록) — MMKV 영속 (design §5)
 import { create } from 'zustand';
 
 import type { FontKey } from '@/lib/fonts';
@@ -10,19 +10,35 @@ const THEME_KEY = 'theme_mode';
 const FONT_SCALE_KEY = 'font_scale';
 const FONT_FAMILY_KEY = 'font_family';
 const LANGUAGE_KEY = 'language';
-const NOTIFY_TIME_KEY = 'notify_time';
+const NOTIFY_TIMES_KEY = 'notify_times';
+const LEGACY_NOTIFY_TIME_KEY = 'notify_time'; // 단일 알림 시절 키 → 1회 마이그레이션
+
+// 알림 시각 목록 로드. 신규 키(JSON 배열) 우선, 없으면 레거시 단일값을 배열로 승격.
+function loadNotifyTimes(): string[] {
+  const raw = settingsStorage.getString(NOTIFY_TIMES_KEY);
+  if (raw) {
+    try {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr;
+    } catch {
+      // 손상 시 빈 배열로 폴백
+    }
+  }
+  const legacy = settingsStorage.getString(LEGACY_NOTIFY_TIME_KEY);
+  return legacy ? [legacy] : [];
+}
 
 interface SettingsStore {
   themeMode: ThemeMode;
   fontScale: number;
   fontFamily: FontKey;
   language: string;
-  notifyTime: string; // 'HH:mm', '' = 알림 비활성
+  notifyTimes: string[]; // 'HH:mm' 목록, [] = 알림 없음
   setThemeMode: (mode: ThemeMode) => void;
   setFontScale: (scale: number) => void;
   setFontFamily: (key: FontKey) => void;
   setLanguage: (lang: string) => void;
-  setNotifyTime: (time: string) => void;
+  setNotifyTimes: (times: string[]) => void;
 }
 
 export const useSettingsStore = create<SettingsStore>((set) => ({
@@ -30,7 +46,7 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   fontScale: settingsStorage.getNumber(FONT_SCALE_KEY) ?? 1,
   fontFamily: (settingsStorage.getString(FONT_FAMILY_KEY) as FontKey) ?? 'system',
   language: settingsStorage.getString(LANGUAGE_KEY) ?? 'ko',
-  notifyTime: settingsStorage.getString(NOTIFY_TIME_KEY) ?? '',
+  notifyTimes: loadNotifyTimes(),
 
   setThemeMode: (mode) => {
     settingsStorage.set(THEME_KEY, mode);
@@ -52,8 +68,8 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
     set({ language: lang });
   },
 
-  setNotifyTime: (time) => {
-    settingsStorage.set(NOTIFY_TIME_KEY, time);
-    set({ notifyTime: time });
+  setNotifyTimes: (times) => {
+    settingsStorage.set(NOTIFY_TIMES_KEY, JSON.stringify(times));
+    set({ notifyTimes: times });
   },
 }));

@@ -64,7 +64,7 @@
     "exportFailed": "내보내기에 실패했습니다.",
     "importFailed": "가져오기에 실패했습니다.",
     "notifyPermission": "설정에서 알림을 허용해 주세요.",
-    "reminder": "작성 리마인더",
+    "reminder": "일기 알림",
     "reminderOff": "끄기",
     "cloudBackup": "Google Drive 백업",
     "cloudDone": "Drive에 백업했습니다.",
@@ -97,7 +97,7 @@
     "groupData": "데이터",
     "backupRestore": "백업 / 복원",
     "lockDesc": "PIN · 생체 인증 · 자동 잠금",
-    "reminderDesc": "매일 작성 알림 시각",
+    "reminderDesc": "일기 작성 알림 시각",
     "themeDesc": "시스템 · 라이트 · 다크",
     "fontDesc": "크기 · 글꼴",
     "languageDesc": "한국어 · English",
@@ -114,7 +114,15 @@
   },
   "notification": {
     "title": "오늘의 일기",
-    "body": "오늘 하루를 기록해보세요."
+    "body": "오늘 하루를 기록해보세요.",
+    "am": "오전",
+    "pm": "오후",
+    "add": "알림 추가",
+    "addTitle": "알림 추가",
+    "empty": "등록된 알림이 없습니다.",
+    "hour": "시",
+    "minute": "분",
+    "confirm": "추가"
   },
   "common": {
     "comingSoon": "준비 중"
