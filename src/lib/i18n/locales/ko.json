@@ -113,7 +113,12 @@
     "cloudFailed": "백업에 실패했습니다.",
     "importConfirmTitle": "일기 가져오기",
     "importConfirmMsg": "가져온 일기가 기존 목록에 추가됩니다. 계속할까요?",
-    "importConfirmOk": "가져오기"
+    "importConfirmOk": "가져오기",
+    "groupInfo": "정보",
+    "contact": "문의하기",
+    "contactDesc": "문제·의견 보내기",
+    "privacy": "개인정보처리방침",
+    "privacyDesc": "데이터 처리 방침 보기"
   },
   "lockSetup": {
     "title": "PIN 설정",
@@ -151,5 +156,18 @@
     "meh": "보통",
     "bad": "별로",
     "awful": "최악"
+  },
+  "contactSheet": {
+    "title": "문의하기",
+    "intro": "문제나 의견이 있으면 {{email}} 으로 보내 주세요. 더 빠른 처리를 위해 아래 기기 정보가 메일에 자동으로 첨부됩니다.",
+    "deviceSection": "기기 정보",
+    "emailButton": "이메일로 문의하기",
+    "emailSubject": "[MyLog] 문의",
+    "emailBodyDivider": "--- 아래 정보는 문의 처리를 위한 것입니다 ---",
+    "emailFailed": "메일 앱을 열 수 없습니다."
+  },
+  "device": {
+    "android": "Android 기기",
+    "ios": "iOS 기기"
   }
 }

@@ -67,7 +67,8 @@
           "locationWhenInUsePermission": "현재 위치를 일기에 자동으로 기록하기 위해 위치를 사용합니다."
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "expo-mail-composer"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -113,7 +113,12 @@
     "cloudFailed": "Backup failed.",
     "importConfirmTitle": "Import entries",
     "importConfirmMsg": "Imported entries will be added to your existing list. Continue?",
-    "importConfirmOk": "Import"
+    "importConfirmOk": "Import",
+    "groupInfo": "Information",
+    "contact": "Contact us",
+    "contactDesc": "Send a problem or feedback",
+    "privacy": "Privacy policy",
+    "privacyDesc": "View our data policy"
   },
   "lockSetup": {
     "title": "Set PIN",
@@ -151,5 +156,18 @@
     "meh": "Meh",
     "bad": "Bad",
     "awful": "Awful"
+  },
+  "contactSheet": {
+    "title": "Contact us",
+    "intro": "If you have a problem or feedback, email {{email}}. For faster handling, the device info below is automatically attached.",
+    "deviceSection": "Device info",
+    "emailButton": "Email us",
+    "emailSubject": "[MyLog] Inquiry",
+    "emailBodyDivider": "--- The info below is for handling your inquiry ---",
+    "emailFailed": "Couldn't open the mail app."
+  },
+  "device": {
+    "android": "Android device",
+    "ios": "iOS device"
   }
 }
