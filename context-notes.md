@@ -150,5 +150,14 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **이전된 화면** — settings/index(feed)/calendar/stats/entry[id]/entry/new/pin-setup + LockScreen/LockGate. 전부 하드코딩 색 제거.
 - **미이전/잔여** — DriveBackupButton(별도 컴포넌트, 추후), tentap 에디터 내부(webview), victory 차트(theme.colors.primary는 적용). P2(Switch/Modal/Toast)는 설계상 보류.
 
+## 2026-06-09 — queries/entries 테스트 (보류 해제)
+
+- **하네스 = better-sqlite3 인메모리 + jest.mock** — `expo-sqlite`는 네이티브라 Node/jest에서 불가. drizzle의 `expo-sqlite` ↔ `better-sqlite3` 드라이버가 **API 동일**(sync 트랜잭션 콜백, `.run/.get/.all`, RQB) → `jest.mock('@/db/client')`로 인메모리 인스턴스만 갈아끼움. **소스 0 수정.**
+- **마이그레이션 재사용** — `migrations/0000_*.sql`을 `--> statement-breakpoint`로 split 후 `sqlite.exec`. 스키마 드리프트 방지(실제 마이그레이션과 동일 DDL).
+- **FK cascade 검증 핵심** — `sqlite.pragma('foreign_keys = ON')` 필수(better-sqlite3도 기본 OFF). deleteEntry → entry_tags/photos cascade 자동삭제 + FTS 수동삭제를 실제로 확인.
+- **⚠ RQB는 thenable** — `createEntry/updateEntry/deleteEntry`는 sync(`.run()`)지만 `getEntry/listEntries/entriesInMonth`(=`db.query.findMany/findFirst`)는 QueryPromise 반환 → 테스트에서 **await 필수**. better-sqlite3 sync라 await는 즉시 resolve. (실앱도 동일 — 호출부 await 중)
+- **UUID 카운터 mock** — `expo-crypto.randomUUID`를 `id-${++n}`로(고정값이면 PK 충돌). db-photo는 expo-file-system 의존 → `deletePhotoFile` no-op mock.
+- **devDep** — `better-sqlite3` + `@types/better-sqlite3`. FTS5 기본 컴파일 포함(검증함).
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

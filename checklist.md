@@ -42,8 +42,8 @@
 - [x] 탭 아이콘 (Ionicons)
 - [x] 다크모드 (themeMode 설정 연동) + i18n (ko/en, i18next + 화면 문자열 t() 전환 + 언어 토글)
 - [x] 테스트: secureStorage(PIN+시도횟수) / useLockStore (11 통과). MMKV/secure-store/crypto mock + @noble transformIgnorePatterns
-- [ ] 테스트: queries/entries (expo-sqlite 인메모리 하네스 필요 — 보류)
-- [ ] 빌드 검증 + 테스트 통과
+- [x] 테스트: queries/entries — better-sqlite3 인메모리 하네스(jest.mock `@/db/client`, 소스 무수정). 트랜잭션/태그 dedup/FK cascade/FTS 동기화/import 매핑 검증 (7 신규, 총 24 통과)
+- [x] 빌드 검증: jest 17/17 + tsc 0에러 + `expo export` android 번들(9.5MB hbc) + 네이티브 `expo run:android` BUILD SUCCESSFUL(11s)·APK 설치·앱 실행(emulator-5554)
 
 ## Phase 2 — 핵심 차별화
 

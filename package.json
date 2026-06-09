@@ -65,9 +65,11 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.3",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.2.2",
     "babel-plugin-inline-import": "^3.0.0",
+    "better-sqlite3": "^12.10.0",
     "drizzle-kit": "^0.31.10",
     "jest-expo": "^56.0.4",
     "patch-package": "^8.0.1",
