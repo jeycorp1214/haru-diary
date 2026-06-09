@@ -83,7 +83,13 @@
 - [x] LockScreen/LockGate: tamagui(YStack/Text/Button) → Unistyles StyleSheet
 - [x] lab.tsx / tamagui.config.ts 삭제, tamagui deps 4개 제거
 - [x] prebuild + 빌드 검증 (BUILD SUCCESSFUL 1m27s, unistyles+edge-to-edge 네이티브 통합). 런타임 육안확인 보류
-- [ ] (후속) 나머지 화면 StyleSheet → Unistyles 테마 점진 이전
+- [x] React Query 표준화 — queryKeys 팩토리 + 기본값 + 통계 무효화 버그 수정
+- [ ] 공통 컴포넌트 시스템 (설계: `components.md`)
+  - [ ] Phase A — 토큰 확장(semantic colors/spacing/typography variants/radius pill)
+  - [ ] Phase B — P0: Box / Typography / Button / Icon
+  - [ ] Phase C — P1: SegmentedControl(최다중복)/Card/Chip/ListRow/Input/Header토큰화/Spinner
+  - [ ] Phase D — 나머지 화면 일괄 이전(다크모드 일관). P2(Switch/Modal/Toast)는 보류
+- [ ] (위 컴포넌트로) 나머지 화면 StyleSheet → Unistyles 테마 이전
 
 ## 추가 기능 (설계 외 요청)
 
