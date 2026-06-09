@@ -14,3 +14,4 @@ export { ToastHost } from './ToastHost';
 export { ConfirmHost } from './ConfirmHost';
 export { RadioDialog } from './RadioDialog';
 export { RadioGroup } from './RadioGroup';
+export { StepSlider } from './StepSlider';

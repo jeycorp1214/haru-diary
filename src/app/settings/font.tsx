@@ -1,19 +1,22 @@
-// 글자 스타일 설정 — 글자 크기, 글꼴, 미리보기.
+// 글자 스타일 설정 — 미리보기(상단), 글자 크기 슬라이더, 글꼴 세로 라디오.
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { Box, Card, SegmentedControl, Typography } from '@/components/ui';
+import { Box, Card, RadioGroup, StepSlider, Typography } from '@/components/ui';
 import { FONT_FAMILY, FONT_KEYS, FONT_SCALES, type FontKey } from '@/lib/fonts';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
-const SIZE_LABELS = ['sizeSmall', 'sizeNormal', 'sizeLarge', 'sizeXLarge'];
-
 const styles = StyleSheet.create((theme) => ({
   content: { padding: 16, gap: 12, paddingBottom: 40 },
-  fontLabel: (active: boolean) => ({ color: active ? theme.colors.onPrimary : theme.colors.text }),
   previewText: { color: theme.colors.text },
+  sizeMark: (size: number) => ({ color: theme.colors.text, fontSize: size }),
+  fontOption: (key: FontKey) => ({
+    color: theme.colors.text,
+    fontSize: 16,
+    fontFamily: FONT_FAMILY[key],
+  }),
 }));
 
 export default function FontSettings() {
@@ -23,28 +26,12 @@ export default function FontSettings() {
   const fontFamily = useSettingsStore((s) => s.fontFamily);
   const setFontFamily = useSettingsStore((s) => s.setFontFamily);
 
-  const sizeOptions = FONT_SCALES.map((scale, i) => ({ key: String(scale), label: t(`settings.${SIZE_LABELS[i]}`) }));
   const fontOptions = FONT_KEYS.map((key) => ({ key, label: t(`settings.font_${key}`) }));
 
   return (
     <Box flex={1} bg="surface">
       <ScreenHeader title={t('settings.fontStyle')} showBack />
       <ScrollView contentContainerStyle={styles.content}>
-        <Typography variant="caption">{t('settings.fontSize')}</Typography>
-        <SegmentedControl
-          options={sizeOptions}
-          value={String(fontScale)}
-          onChange={(k) => setFontScale(Number(k))}
-        />
-        <Typography variant="caption">{t('settings.fontFamily')}</Typography>
-        <SegmentedControl
-          options={fontOptions}
-          value={fontFamily}
-          onChange={(k) => setFontFamily(k as FontKey)}
-          renderLabel={(o, active) => (
-            <Text style={[styles.fontLabel(active), { fontFamily: FONT_FAMILY[o.key] }]}>{o.label}</Text>
-          )}
-        />
         <Card>
           <Text
             style={[
@@ -53,6 +40,25 @@ export default function FontSettings() {
             ]}>
             안녕하세요. 오늘 하루도 수고했어요.
           </Text>
+        </Card>
+
+        <Typography variant="caption">{t('settings.fontSize')}</Typography>
+        <StepSlider
+          steps={FONT_SCALES}
+          value={fontScale}
+          onChange={setFontScale}
+          minLabel={<Text style={styles.sizeMark(13)}>가</Text>}
+          maxLabel={<Text style={styles.sizeMark(24)}>가</Text>}
+        />
+
+        <Typography variant="caption">{t('settings.fontFamily')}</Typography>
+        <Card>
+          <RadioGroup
+            options={fontOptions}
+            value={fontFamily}
+            onChange={(k) => setFontFamily(k as FontKey)}
+            renderLabel={(o) => <Text style={styles.fontOption(o.key)}>{o.label}</Text>}
+          />
         </Card>
       </ScrollView>
     </Box>
