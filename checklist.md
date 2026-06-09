@@ -110,3 +110,12 @@
   - [x] 소비처: getAutoTag 위치/날씨(PII) 캐시를 암호화 store에 + 권한거부 시 폴백
   - [x] 테스트: 암호키 파생·라운드트립·lock 후 접근차단 (6 신규, 총 17 통과)
   - [x] 빌드/테스트 통과 (jest 17/17, tsc 0 에러). 기기 육안확인 보류
+- [x] 감정 이모티콘 이미지화 — Unicode 5종 → `assets/mods/emoticon_1..36.png` 36종, 바텀시트 그리드 선택
+  - [x] `constants/emoticons.ts` — 정적 require 맵(키→source) + `emoticonSource(key)` 변환기
+  - [x] `db/seed.ts` — MOOD_SEED 5개 → 36개(id=key=emoji='emoticon_N', score 0). emoji 컬럼에 이미지 키 저장(장식용)
+  - [x] `components/MoodPickerSheet.tsx` — Modal 바텀시트 6열 그리드, 탭 선택 후 닫힘
+  - [x] `entry/new.tsx` — 인라인 5버튼 → 트리거(선택 이미지/플레이스홀더) + 시트
+  - [x] 렌더 이미지화: index(목록)·entry/[id](상세)·stats(분포 그리드). 옛 Unicode/미선택은 폴백 유지
+  - [x] i18n ko/en `entry.moodPick`
+  - [x] tsc 0, jest 48/48 통과. 실기기 육안검증 보류
+  - [ ] **삭제 후보 검토 대기**(사용자 확인 후): `constants/mood.ts`(moodColor) / `stats.moodDistribution`+`MoodCount`+`queryKeys.statsMoods` / `pdf.ts` emoji 출력 / 옛 mood 시드 잔존 데이터

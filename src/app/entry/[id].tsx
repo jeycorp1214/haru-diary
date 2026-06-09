@@ -9,6 +9,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Box, Typography } from '@/components/ui';
+import { emoticonSource } from '@/constants/emoticons';
 import { deleteEntry, getEntry } from '@/db/queries/entries';
 import { confirm } from '@/lib/confirm';
 import { exportEntryPdf } from '@/lib/pdf';
@@ -21,6 +22,7 @@ import { useSettingsStore } from '@/stores/useSettingsStore';
 const styles = StyleSheet.create((theme) => ({
   content: { padding: 16, gap: 12 },
   emoji: { fontSize: 32 },
+  emojiImg: { width: 36, height: 36 },
   body: { color: theme.colors.text },
   photo: { width: 104, height: 104, borderRadius: 8 },
   delete: { color: theme.colors.danger, fontSize: 16 },
@@ -95,7 +97,13 @@ export default function EntryDetailScreen() {
       />
       <ScrollView contentContainerStyle={styles.content}>
         <Box row align="center" gap="sm">
-          {entry.mood && <Text style={styles.emoji}>{entry.mood.emoji}</Text>}
+          {emoticonSource(entry.mood?.emoji) && (
+            <Image
+              source={emoticonSource(entry.mood?.emoji)}
+              style={styles.emojiImg}
+              contentFit="contain"
+            />
+          )}
           <Typography variant="h2" style={{ flex: 1 }}>
             {entry.title || t('entry.untitled')}
           </Typography>

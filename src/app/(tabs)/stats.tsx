@@ -1,5 +1,6 @@
 // 감정 통계 — 연속 작성 스트릭 + 감정 분포 막대 차트(victory-native)
 import { useQuery } from '@tanstack/react-query';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
@@ -7,6 +8,7 @@ import { Bar, CartesianChart } from 'victory-native';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Box, Typography } from '@/components/ui';
+import { emoticonSource } from '@/constants/emoticons';
 import { currentStreak, moodDistribution } from '@/db/queries/stats';
 import { queryKeys } from '@/lib/queryKeys';
 
@@ -57,7 +59,15 @@ export default function StatsScreen() {
             <Box row justify="space-around" mt="sm">
               {data!.map((d) => (
                 <Box key={d.key} align="center" gap="xs">
-                  <Text style={{ fontSize: 24 }}>{d.emoji}</Text>
+                  {emoticonSource(d.emoji) ? (
+                    <Image
+                      source={emoticonSource(d.emoji)}
+                      style={{ width: 28, height: 28 }}
+                      contentFit="contain"
+                    />
+                  ) : (
+                    <Text style={{ fontSize: 24 }}>{d.emoji}</Text>
+                  )}
                   <Typography variant="caption">{d.count}</Typography>
                 </Box>
               ))}

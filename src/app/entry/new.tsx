@@ -10,10 +10,11 @@ import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'reac
 import { StyleSheet } from 'react-native-unistyles';
 import ImagePicker from 'react-native-image-crop-picker';
 
+import { MoodPickerSheet } from '@/components/MoodPickerSheet';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Box, Chip, Typography } from '@/components/ui';
+import { emoticonSource } from '@/constants/emoticons';
 import { createEntry } from '@/db/queries/entries';
-import { MOOD_SEED } from '@/db/seed';
 import { persistPhoto } from '@/lib/db-photo';
 import { invalidateEntryData } from '@/lib/query';
 import { toast } from '@/lib/toast';
@@ -29,14 +30,18 @@ function escapeHtml(s: string): string {
 }
 
 const styles = StyleSheet.create((theme) => ({
-  mood: (selected: boolean) => ({
-    padding: 8,
+  moodTrigger: (selected: boolean) => ({
+    width: 72,
+    height: 72,
     borderRadius: theme.radius.md,
-    borderWidth: 2,
-    borderColor: selected ? theme.colors.primary : 'transparent',
+    borderWidth: selected ? 2 : 1,
+    borderColor: selected ? theme.colors.primary : theme.colors.border,
+    borderStyle: selected ? ('solid' as const) : ('dashed' as const),
     backgroundColor: selected ? theme.colors.primarySoft : 'transparent',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   }),
-  moodEmoji: { fontSize: 28 },
+  moodImg: { width: 56, height: 56 },
   title: { fontSize: 20, fontWeight: '600', paddingVertical: 8, color: theme.colors.text },
   thumb: { width: 72, height: 72, borderRadius: 8 },
   addPhoto: {
@@ -71,6 +76,7 @@ export default function NewEntryScreen() {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [moodId, setMoodId] = useState<string | null>(null);
+  const [moodSheet, setMoodSheet] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [photos, setPhotos] = useState<PhotoDraft[]>([]);
@@ -180,16 +186,15 @@ export default function NewEntryScreen() {
       />
 
       <Box p="md" gap="md">
-        <Box row gap="sm" justify="space-between">
-          {MOOD_SEED.map((m) => (
-            <Pressable
-              key={m.id}
-              onPress={() => setMoodId(moodId === m.id ? null : m.id)}
-              style={styles.mood(moodId === m.id)}>
-              <Text style={styles.moodEmoji}>{m.emoji}</Text>
-            </Pressable>
-          ))}
-        </Box>
+        <Pressable onPress={() => setMoodSheet(true)} style={styles.moodTrigger(!!moodId)}>
+          {moodId ? (
+            <Image source={emoticonSource(moodId)} style={styles.moodImg} contentFit="contain" />
+          ) : (
+            <Typography variant="caption" color="textMuted">
+              {t('entry.moodPick')}
+            </Typography>
+          )}
+        </Pressable>
 
         <TextInput
           value={title}
@@ -263,6 +268,13 @@ export default function NewEntryScreen() {
         style={styles.toolbar}>
         <Toolbar editor={editor} />
       </KeyboardAvoidingView>
+
+      <MoodPickerSheet
+        visible={moodSheet}
+        selectedKey={moodId}
+        onSelect={setMoodId}
+        onClose={() => setMoodSheet(false)}
+      />
     </Box>
   );
 }

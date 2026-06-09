@@ -2,6 +2,7 @@
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Box, Icon, Input, Typography } from '@/components/ui';
+import { emoticonSource } from '@/constants/emoticons';
 import { listEntries } from '@/db/queries/entries';
 import { searchEntries } from '@/db/queries/search';
 import { queryKeys } from '@/lib/queryKeys';
@@ -64,7 +66,15 @@ export default function FeedScreen() {
           <Link href={{ pathname: '/entry/[id]', params: { id: item.id } }} asChild>
             <Pressable>
               <Box row gap="md" py="sm">
-                <Text style={{ fontSize: 28 }}>{item.mood?.emoji ?? '📝'}</Text>
+                {emoticonSource(item.mood?.emoji) ? (
+                  <Image
+                    source={emoticonSource(item.mood?.emoji)}
+                    style={{ width: 32, height: 32 }}
+                    contentFit="contain"
+                  />
+                ) : (
+                  <Text style={{ fontSize: 28 }}>📝</Text>
+                )}
                 <Box flex={1} gap="xs">
                   <Typography variant="bodyStrong" numberOfLines={1}>
                     {item.title || t('feed.untitled')}

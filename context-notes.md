@@ -178,5 +178,16 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **실기기 검증(emulator-5554)** — 영문 테스트 일기 작성 후 단일/전체 둘 다 Android 공유 시트("Sharing 1 file" + *.pdf) 정상. cache/Print/에 PDF 생성. pull해서 %PDF-1.4·28KB 확인 + macOS `qlmanage -t`로 렌더 확인(날짜 회색/이모지/제목 굵게/본문/HTML 스타일 정확).
 - **미실행 경로** — 사진 base64(사진 없는 일기로 테스트). 코드는 작성됨. 한글 본문 PDF(adb 한글 입력 불가로 영문 사용했으나 webview 시스템폰트라 한글 렌더 문제 없음 — 설정 프리뷰 등에서 기검증).
 
+## 감정 이모티콘 이미지화 (2026-06-09)
+
+- **요구** — Unicode 이모지 5종 대신 `assets/mods/emoticon_1..36.png` 36종 이미지로 감정 등록. 바텀시트 그리드에서 탭 선택.
+- **데이터 모델 결정** — 마이그레이션 회피 위해 `moods.emoji` 컬럼을 **이미지 키 저장용으로 재활용**(`'emoticon_12'` 등). 모든 렌더 사이트가 이미 `.emoji`를 읽으므로 해석만 변경 → 최소 변경. `score`는 0 고정(NOT NULL 유지, 통계 의미 폐기). 사용자 결정: "통계 버리고 36개 장식용".
+- **정적 require 맵** — RN은 동적 require 불가 → `constants/emoticons.ts`에 36개 명시 매핑. `emoticonSource(key)`가 키→source 변환(없거나 옛 Unicode면 undefined → 호출부에서 폴백).
+- **require 경로** — babel module-resolver 없음(metro tsconfig-paths가 `@/` 해석). png require는 안전하게 상대경로 `../../assets/mods/`.
+- **선택 UI** — `MoodPickerSheet`(ContactSheet 패턴, Modal+백드롭). 6열 그리드(36=6×6), maxHeight 360 스크롤. 탭 시 `onSelect`+`onClose`. 같은 항목 재탭 = 해제.
+- **렌더 폴백** — index/[id]/stats 모두 `emoticonSource()` truthy면 `<Image contentFit=contain>`, 아니면 기존 Text(📝/Unicode). 옛 일기(Unicode emoji) 깨짐 방지.
+- **삭제 안 함(사용자 지시)** — `constants/mood.ts`(moodColor, calendar 점 색 — score 0이라 전부 회색), `stats.moodDistribution`/`MoodCount`/`queryKeys.statsMoods`, `pdf.ts:47` emoji(PDF 제목에 'emoticon_N' 텍스트 노출됨), 옛 5 mood 시드 잔존 — 모두 유지. 사용자 검토 후 삭제 예정.
+- **검증** — tsc 0, jest 48/48. 실기기 육안검증 보류.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.
