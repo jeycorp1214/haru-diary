@@ -10,15 +10,16 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { listEntries } from '@/db/queries/entries';
 import { searchEntries } from '@/db/queries/search';
+import { queryKeys } from '@/lib/queryKeys';
 
 export default function FeedScreen() {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const searching = query.trim().length > 0;
 
-  const feed = useQuery({ queryKey: ['entries'], queryFn: () => listEntries() });
+  const feed = useQuery({ queryKey: queryKeys.entries(), queryFn: () => listEntries() });
   const search = useQuery({
-    queryKey: ['search', query.trim()],
+    queryKey: queryKeys.search(query.trim()),
     queryFn: () => searchEntries(query),
     enabled: searching,
   });

@@ -9,7 +9,8 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { deleteEntry, getEntry } from '@/db/queries/entries';
 import { FONT_FAMILY } from '@/lib/fonts';
-import { queryClient } from '@/lib/query';
+import { invalidateEntryData } from '@/lib/query';
+import { queryKeys } from '@/lib/queryKeys';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
 export default function EntryDetailScreen() {
@@ -20,14 +21,14 @@ export default function EntryDetailScreen() {
   const fontFamily = useSettingsStore((s) => s.fontFamily);
 
   const { data: entry, isLoading } = useQuery({
-    queryKey: ['entry', id],
+    queryKey: queryKeys.entry(id),
     queryFn: () => getEntry(id),
   });
 
   const remove = useMutation({
     mutationFn: () => Promise.resolve(deleteEntry(id)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entries'] });
+      invalidateEntryData();
       router.back();
     },
   });

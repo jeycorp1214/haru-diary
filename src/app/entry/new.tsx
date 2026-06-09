@@ -21,7 +21,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 import { createEntry } from '@/db/queries/entries';
 import { MOOD_SEED } from '@/db/seed';
 import { persistPhoto } from '@/lib/db-photo';
-import { queryClient } from '@/lib/query';
+import { invalidateEntryData } from '@/lib/query';
 import { useSpeechToText } from '@/lib/voice/useSpeechToText';
 import { getAutoTag, type AutoTag } from '@/lib/weather/autoTag';
 
@@ -105,7 +105,7 @@ export default function NewEntryScreen() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entries'] });
+      invalidateEntryData();
       router.back();
     },
   });

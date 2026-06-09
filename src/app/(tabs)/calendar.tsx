@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { entriesInMonth } from '@/db/queries/entries';
 import { moodColor } from '@/constants/mood';
+import { queryKeys } from '@/lib/queryKeys';
 import { FONT_FAMILY, FONT_FAMILY_BOLD } from '@/lib/fonts';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
@@ -28,7 +29,7 @@ export default function CalendarScreen() {
   };
 
   const { data } = useQuery({
-    queryKey: ['entries', 'month', yearMonth],
+    queryKey: queryKeys.entriesMonth(yearMonth),
     queryFn: () => entriesInMonth(yearMonth),
   });
 

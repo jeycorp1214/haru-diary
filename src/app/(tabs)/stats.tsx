@@ -6,11 +6,12 @@ import { Bar, CartesianChart } from 'victory-native';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { currentStreak, moodDistribution } from '@/db/queries/stats';
+import { queryKeys } from '@/lib/queryKeys';
 
 export default function StatsScreen() {
   const { t } = useTranslation();
-  const { data } = useQuery({ queryKey: ['stats', 'moods'], queryFn: moodDistribution });
-  const { data: streak } = useQuery({ queryKey: ['stats', 'streak'], queryFn: currentStreak });
+  const { data } = useQuery({ queryKey: queryKeys.statsMoods(), queryFn: moodDistribution });
+  const { data: streak } = useQuery({ queryKey: queryKeys.statsStreak(), queryFn: currentStreak });
 
   const hasData = data && data.length > 0;
   const chartData = (data ?? []).map((d, i) => ({ x: i, y: d.count }));
