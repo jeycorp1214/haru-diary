@@ -3,11 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { useColorScheme, View } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { Calendar, type DateData } from 'react-native-calendars';
 import { useTranslation } from 'react-i18next';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { Box } from '@/components/ui';
 import { entriesInMonth } from '@/db/queries/entries';
 import { moodColor } from '@/constants/mood';
 import { queryKeys } from '@/lib/queryKeys';
@@ -51,7 +52,7 @@ export default function CalendarScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <Box flex={1} bg="surface">
       <ScreenHeader title={t('tabs.calendar')} />
       <Calendar
         current={`${yearMonth}-01`}
@@ -70,6 +71,6 @@ export default function CalendarScreen() {
             : fontTheme
         }
       />
-    </View>
+    </Box>
   );
 }

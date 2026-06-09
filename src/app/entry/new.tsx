@@ -6,18 +6,12 @@ import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { Box, Chip, Typography } from '@/components/ui';
 import { createEntry } from '@/db/queries/entries';
 import { MOOD_SEED } from '@/db/seed';
 import { persistPhoto } from '@/lib/db-photo';
@@ -31,6 +25,44 @@ type PhotoDraft = { uri: string; width: number; height: number };
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
+const styles = StyleSheet.create((theme) => ({
+  mood: (selected: boolean) => ({
+    padding: 8,
+    borderRadius: theme.radius.md,
+    borderWidth: 2,
+    borderColor: selected ? theme.colors.primary : 'transparent',
+    backgroundColor: selected ? theme.colors.primarySoft : 'transparent',
+  }),
+  moodEmoji: { fontSize: 28 },
+  title: { fontSize: 20, fontWeight: '600', paddingVertical: 8, color: theme.colors.text },
+  thumb: { width: 72, height: 72, borderRadius: 8 },
+  addPhoto: {
+    width: 72,
+    height: 72,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tagInput: {
+    fontSize: 15,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderColor: theme.colors.border,
+    color: theme.colors.text,
+  },
+  editor: { flex: 1 },
+  toolbar: { position: 'absolute', width: '100%', bottom: 0 },
+  save: (enabled: boolean) => ({
+    color: enabled ? theme.colors.primary : theme.colors.textDisabled,
+    fontSize: 16,
+    fontWeight: '600' as const,
+  }),
+  placeholder: { color: theme.colors.placeholder },
+}));
 
 export default function NewEntryScreen() {
   const { t, i18n } = useTranslation();
@@ -46,7 +78,6 @@ export default function NewEntryScreen() {
   const editor = useEditorBridge({ autofocus: false, avoidIosKeyboard: true });
   const editorText = useEditorContent(editor, { type: 'text' });
 
-  // STT: 인식된 텍스트를 본문 끝에 단락으로 삽입
   const stt = useSpeechToText(async (text) => {
     const html = await editor.getHTML();
     editor.setContent(`${html}<p>${escapeHtml(text)}</p>`);
@@ -82,7 +113,7 @@ export default function NewEntryScreen() {
   }
 
   function removeTag(name: string) {
-    setTags(tags.filter((t) => t !== name));
+    setTags(tags.filter((tg) => tg !== name));
   }
 
   const save = useMutation({
@@ -113,81 +144,82 @@ export default function NewEntryScreen() {
   const canSave = (editorText?.trim().length ?? 0) > 0 && !save.isPending;
 
   return (
-    <View style={styles.container}>
+    <Box flex={1} bg="surface">
       <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
       <ScreenHeader
         title={t('entry.new')}
         showBack
         right={
           <Pressable disabled={!canSave} onPress={() => save.mutate()}>
-            <Text style={[styles.save, !canSave && styles.saveDisabled]}>{t('entry.save')}</Text>
+            <Text style={styles.save(canSave)}>{t('entry.save')}</Text>
           </Pressable>
         }
       />
 
-      <View style={styles.header}>
-        <View style={styles.moodRow}>
+      <Box p="md" gap="md">
+        <Box row gap="sm" justify="space-between">
           {MOOD_SEED.map((m) => (
             <Pressable
               key={m.id}
               onPress={() => setMoodId(moodId === m.id ? null : m.id)}
-              style={[styles.mood, moodId === m.id && styles.moodSelected]}>
+              style={styles.mood(moodId === m.id)}>
               <Text style={styles.moodEmoji}>{m.emoji}</Text>
             </Pressable>
           ))}
-        </View>
+        </Box>
 
         <TextInput
           value={title}
           onChangeText={setTitle}
           placeholder={t('entry.title')}
+          placeholderTextColor={styles.placeholder.color}
           style={styles.title}
         />
 
-        <View style={styles.photoRow}>
+        <Box row gap="sm" style={{ flexWrap: 'wrap' }}>
           {photos.map((p) => (
             <Pressable key={p.uri} onPress={() => removePhoto(p.uri)}>
               <Image source={{ uri: p.uri }} style={styles.thumb} contentFit="cover" />
             </Pressable>
           ))}
           <Pressable onPress={pickPhoto} style={styles.addPhoto}>
-            <Text style={styles.addPhotoIcon}>＋</Text>
-            <Text style={styles.addPhotoLabel}>{t('entry.addPhoto')}</Text>
+            <Typography variant="caption">＋</Typography>
+            <Typography variant="caption" style={{ fontSize: 10 }}>
+              {t('entry.addPhoto')}
+            </Typography>
           </Pressable>
-        </View>
+        </Box>
 
-        <Pressable onPress={addLocationWeather} disabled={tagging} style={styles.locRow}>
-          <Text style={styles.locText}>
+        <Pressable onPress={addLocationWeather} disabled={tagging} style={{ paddingVertical: 4 }}>
+          <Typography variant="caption" color="text">
             📍{' '}
             {autoTag
-              ? [
-                  autoTag.locationName,
-                  autoTag.weather,
-                  autoTag.tempC != null && `${Math.round(autoTag.tempC)}°`,
-                ]
+              ? [autoTag.locationName, autoTag.weather, autoTag.tempC != null && `${Math.round(autoTag.tempC)}°`]
                   .filter(Boolean)
                   .join(' · ')
               : t('entry.addLocation')}
-          </Text>
+          </Typography>
         </Pressable>
 
         <Pressable
           onPress={() => (stt.isListening ? stt.stop() : stt.start(i18n.language))}
-          style={[styles.sttRow, stt.isListening && styles.sttRowActive]}>
-          <Text style={styles.locText}>
+          style={{ paddingVertical: 4, opacity: stt.isListening ? 0.7 : 1 }}>
+          <Typography variant="caption" color="text">
             {stt.isListening ? `🔴 ${t('entry.sttListening')}` : `🎙️ ${t('entry.stt')}`}
-          </Text>
+          </Typography>
         </Pressable>
-        {stt.error ? <Text style={styles.sttError}>{t('entry.sttError')}</Text> : null}
+        {stt.error ? (
+          <Typography variant="caption" color="danger">
+            {t('entry.sttError')}
+          </Typography>
+        ) : null}
 
         {tags.length > 0 && (
-          <View style={styles.chips}>
+          <Box row gap="sm" style={{ flexWrap: 'wrap' }}>
             {tags.map((tag) => (
-              <Pressable key={tag} onPress={() => removeTag(tag)} style={styles.chip}>
-                <Text style={styles.chipText}>#{tag} ✕</Text>
-              </Pressable>
+              <Chip key={tag} label={`#${tag}`} onRemove={() => removeTag(tag)} />
             ))}
-          </View>
+          </Box>
         )}
         <TextInput
           value={tagInput}
@@ -196,9 +228,10 @@ export default function NewEntryScreen() {
           submitBehavior="submit"
           returnKeyType="done"
           placeholder={t('entry.tagPlaceholder')}
+          placeholderTextColor={styles.placeholder.color}
           style={styles.tagInput}
         />
-      </View>
+      </Box>
 
       <RichText editor={editor} style={styles.editor} />
 
@@ -207,43 +240,6 @@ export default function NewEntryScreen() {
         style={styles.toolbar}>
         <Toolbar editor={editor} />
       </KeyboardAvoidingView>
-    </View>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: { padding: 16, gap: 12 },
-  moodRow: { flexDirection: 'row', gap: 8, justifyContent: 'space-between' },
-  mood: { padding: 8, borderRadius: 12, borderWidth: 2, borderColor: 'transparent' },
-  moodSelected: { borderColor: '#208AEF', backgroundColor: '#208AEF11' },
-  moodEmoji: { fontSize: 28 },
-  title: { fontSize: 20, fontWeight: '600', paddingVertical: 8 },
-  photoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  thumb: { width: 72, height: 72, borderRadius: 8 },
-  addPhoto: {
-    width: 72,
-    height: 72,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addPhotoIcon: { fontSize: 22, color: '#888' },
-  addPhotoLabel: { fontSize: 10, color: '#888' },
-  locRow: { paddingVertical: 4 },
-  locText: { fontSize: 14, color: '#444' },
-  sttRow: { paddingVertical: 4 },
-  sttRowActive: { opacity: 0.7 },
-  sttError: { fontSize: 12, color: '#D11' },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { backgroundColor: '#208AEF11', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
-  chipText: { color: '#208AEF', fontSize: 14 },
-  tagInput: { fontSize: 15, paddingVertical: 8, borderTopWidth: 1, borderColor: '#eee' },
-  editor: { flex: 1 },
-  toolbar: { position: 'absolute', width: '100%', bottom: 0 },
-  save: { color: '#208AEF', fontSize: 16, fontWeight: '600' },
-  saveDisabled: { color: '#bbb' },
-});

@@ -87,9 +87,8 @@
 - [ ] 공통 컴포넌트 시스템 (설계: `components.md`)
   - [ ] Phase A — 토큰 확장(semantic colors/spacing/typography variants/radius pill)
   - [ ] Phase B — P0: Box / Typography / Button / Icon
-  - [ ] Phase C — P1: SegmentedControl(최다중복)/Card/Chip/ListRow/Input/Header토큰화/Spinner
-  - [ ] Phase D — 나머지 화면 일괄 이전(다크모드 일관). P2(Switch/Modal/Toast)는 보류
-- [ ] (위 컴포넌트로) 나머지 화면 StyleSheet → Unistyles 테마 이전
+  - [x] Phase C — P1: SegmentedControl/Card/Chip/ListRow/Input/Header토큰화/Spinner
+  - [x] Phase D — 화면 이전(설정/피드/캘린더/통계/상세/작성/pin-setup). 다크모드 기기 검증(피드/통계 스크린샷). P2(Switch/Modal/Toast)는 보류
 
 ## 추가 기능 (설계 외 요청)
 

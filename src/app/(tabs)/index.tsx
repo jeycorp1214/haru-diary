@@ -5,12 +5,28 @@ import dayjs from 'dayjs';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { Box, Icon, Input, Typography } from '@/components/ui';
 import { listEntries } from '@/db/queries/entries';
 import { searchEntries } from '@/db/queries/search';
 import { queryKeys } from '@/lib/queryKeys';
+
+const styles = StyleSheet.create((theme) => ({
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 24,
+    width: 56,
+    height: 56,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));
 
 export default function FeedScreen() {
   const { t } = useTranslation();
@@ -28,87 +44,58 @@ export default function FeedScreen() {
   const isLoading = searching ? search.isLoading : feed.isLoading;
 
   return (
-    <View style={styles.container}>
+    <Box flex={1} bg="surface">
       <ScreenHeader title={t('tabs.feed')} />
-      <View style={styles.searchBar}>
-        <TextInput
+      <Box px="md">
+        <Input
           value={query}
           onChangeText={setQuery}
           placeholder={t('feed.searchPlaceholder')}
-          style={styles.searchInput}
+          leftIcon="search"
+          clearable
           returnKeyType="search"
-          clearButtonMode="while-editing"
         />
-      </View>
+      </Box>
       <FlashList
         data={data ?? []}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={{ padding: 16 }}
         renderItem={({ item }) => (
           <Link href={{ pathname: '/entry/[id]', params: { id: item.id } }} asChild>
-            <Pressable style={styles.row}>
-              <Text style={styles.emoji}>{item.mood?.emoji ?? '📝'}</Text>
-              <View style={styles.rowBody}>
-                <Text style={styles.rowTitle} numberOfLines={1}>
-                  {item.title || t('feed.untitled')}
-                </Text>
-                <Text style={styles.rowPreview} numberOfLines={2}>
-                  {item.contentText}
-                </Text>
-                <Text style={styles.rowDate}>{dayjs(item.entryDate).format('YYYY.MM.DD')}</Text>
-              </View>
+            <Pressable>
+              <Box row gap="md" py="sm">
+                <Text style={{ fontSize: 28 }}>{item.mood?.emoji ?? '📝'}</Text>
+                <Box flex={1} gap="xs">
+                  <Typography variant="bodyStrong" numberOfLines={1}>
+                    {item.title || t('feed.untitled')}
+                  </Typography>
+                  <Typography variant="caption" numberOfLines={2}>
+                    {item.contentText}
+                  </Typography>
+                  <Typography variant="caption" color="textDisabled">
+                    {dayjs(item.entryDate).format('YYYY.MM.DD')}
+                  </Typography>
+                </Box>
+              </Box>
             </Pressable>
           </Link>
         )}
         ListEmptyComponent={
           !isLoading ? (
-            <View style={styles.empty}>
-              <Text style={styles.emptyText}>
+            <Box align="center" pt="xl" px="lg">
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
                 {searching ? t('feed.noResults') : t('feed.empty')}
-              </Text>
-            </View>
+              </Typography>
+            </Box>
           ) : null
         }
       />
 
       <Link href="/entry/new" asChild>
         <Pressable style={styles.fab}>
-          <Text style={styles.fabIcon}>＋</Text>
+          <Icon name="add" size={28} color="onPrimary" />
         </Pressable>
       </Link>
-    </View>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  searchBar: { paddingHorizontal: 16, paddingTop: 8 },
-  searchInput: {
-    backgroundColor: '#7676801f',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-  },
-  list: { padding: 16 },
-  row: { flexDirection: 'row', gap: 12, paddingVertical: 12 },
-  emoji: { fontSize: 28 },
-  rowBody: { flex: 1, gap: 2 },
-  rowTitle: { fontSize: 16, fontWeight: '600' },
-  rowPreview: { fontSize: 14, color: '#666' },
-  rowDate: { fontSize: 12, color: '#999', marginTop: 2 },
-  empty: { alignItems: 'center', paddingTop: 80, paddingHorizontal: 24 },
-  emptyText: { color: '#999', textAlign: 'center' },
-  fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#208AEF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fabIcon: { color: '#fff', fontSize: 28, lineHeight: 30 },
-});

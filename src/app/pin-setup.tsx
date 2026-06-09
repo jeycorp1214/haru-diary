@@ -2,10 +2,25 @@
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { TextInput } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { Box, Typography } from '@/components/ui';
 import { savePIN } from '@/lib/auth/secureStorage';
+
+const styles = StyleSheet.create((theme) => ({
+  input: {
+    width: 160,
+    fontSize: 28,
+    letterSpacing: 12,
+    textAlign: 'center',
+    borderBottomWidth: 1,
+    borderColor: theme.colors.border,
+    paddingVertical: 8,
+    color: theme.colors.text,
+  },
+}));
 
 export default function PinSetupScreen() {
   const { t } = useTranslation();
@@ -26,7 +41,6 @@ export default function PinSetupScreen() {
       setPin('');
       return;
     }
-    // confirm
     if (input === first) {
       await savePIN(input);
       router.back();
@@ -39,40 +53,28 @@ export default function PinSetupScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <Box flex={1} bg="surface">
       <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
       <ScreenHeader title={t('lockSetup.title')} showBack />
-      <View style={styles.container}>
-      <Text style={styles.label}>
-        {step === 'enter' ? t('lockSetup.enter') : t('lockSetup.confirm')}
-      </Text>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <TextInput
-        value={pin}
-        onChangeText={handleChange}
-        keyboardType="number-pad"
-        maxLength={4}
-        secureTextEntry
-        autoFocus
-        style={styles.input}
-      />
-      </View>
-    </View>
+      <Box flex={1} align="center" justify="center" gap="md" p="lg">
+        <Typography variant="body">
+          {step === 'enter' ? t('lockSetup.enter') : t('lockSetup.confirm')}
+        </Typography>
+        {error ? (
+          <Typography variant="body" color="danger">
+            {error}
+          </Typography>
+        ) : null}
+        <TextInput
+          value={pin}
+          onChangeText={handleChange}
+          keyboardType="number-pad"
+          maxLength={4}
+          secureTextEntry
+          autoFocus
+          style={styles.input}
+        />
+      </Box>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
-  label: { fontSize: 16, color: '#444' },
-  error: { color: '#e0245e' },
-  input: {
-    width: 160,
-    fontSize: 28,
-    letterSpacing: 12,
-    textAlign: 'center',
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-    paddingVertical: 8,
-  },
-});
