@@ -170,5 +170,30 @@
   "device": {
     "android": "Android device",
     "ios": "iOS device"
+  },
+  "devtools": {
+    "title": "Developer Tools",
+    "warning": "The actions below cannot be undone. Proceed with care.",
+    "groupPartial": "Partial reset",
+    "groupDanger": "Danger",
+    "deleteLabel": "Delete",
+    "resetLabel": "Reset",
+    "done": "Deleted.",
+    "confirmWord": "DELETE",
+    "entriesTitle": "Delete all entries",
+    "entriesDesc": "Removes all entries, photos, and tags. Settings are kept.",
+    "entriesConfirm": "Delete all entries? This cannot be undone.",
+    "photosTitle": "Delete photos only",
+    "photosDesc": "Keeps entry text and removes attached photos only.",
+    "photosConfirm": "Delete all photos? This cannot be undone.",
+    "settingsTitle": "Reset settings only",
+    "settingsDesc": "Restores theme, font, reminders, and language to defaults.",
+    "settingsConfirm": "Reset settings to defaults?",
+    "settingsDone": "Settings reset.",
+    "wipeTitle": "Delete all data",
+    "wipeDesc": "Deletes entries, photos, settings, lock, and PIN, then restarts the app.",
+    "wipeConfirm": "This is a factory-reset level action. Type '{{word}}' to proceed.",
+    "wipeLabel": "Delete all data",
+    "wipeDoneRestart": "Deleted. Please restart the app manually."
   }
 }

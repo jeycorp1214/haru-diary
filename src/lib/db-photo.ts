@@ -22,3 +22,9 @@ export function deletePhotoFile(uri: string) {
   const file = new File(uri);
   if (file.exists) file.delete();
 }
+
+// 사진 디렉토리 통째 삭제 후 재생성 — 데이터 초기화(개발도구)용
+export function deleteAllPhotoFiles() {
+  if (PHOTO_DIR.exists) PHOTO_DIR.delete();
+  PHOTO_DIR.create();
+}

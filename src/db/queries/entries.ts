@@ -115,6 +115,21 @@ export function deleteEntry(id: string): void {
   });
 }
 
+// 일기 전체 삭제 — entries 비우면 entry_tags/photos는 cascade. FTS·tags는 수동.
+// moods는 시드(시스템) 데이터라 보존. 사진 파일 정리는 호출부에서 별도 처리.
+export function clearAllEntries(): void {
+  db.transaction((tx) => {
+    tx.run(sql`DELETE FROM entries_fts`);
+    tx.delete(entries).run(); // entry_tags/photos cascade
+    tx.delete(tags).run();
+  });
+}
+
+// 사진만 전체 삭제 — 일기 본문은 유지, photos 행만 비움. 파일 정리는 호출부에서.
+export function clearAllPhotoRows(): void {
+  db.delete(photos).run();
+}
+
 // 상세 — 감정/사진/태그 포함
 export function getEntry(id: string) {
   return db.query.entries.findFirst({

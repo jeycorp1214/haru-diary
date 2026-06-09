@@ -1,9 +1,10 @@
 // 설정 탭 — 그룹별 메뉴 목록. 각 행 탭 시 전용 설정 페이지로 이동. 항목 확장 대비 구조.
+import Constants from 'expo-constants';
 import { openBrowserAsync } from 'expo-web-browser';
 import { useRouter, type Href } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { ContactSheet } from '@/components/ContactSheet';
@@ -43,12 +44,26 @@ const GROUPS: MenuGroup[] = [
 const styles = StyleSheet.create(() => ({
   content: { padding: 16, gap: 16, paddingBottom: 40 },
   group: { gap: 6 },
+  version: { alignItems: 'center' as const, paddingVertical: 8 },
 }));
+
+const DEVTOOLS_TAP_COUNT = 7; // 버전 N회 탭 → 개발도구 진입(숨김 제스처)
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [contactOpen, setContactOpen] = useState(false);
+  const tapCount = useRef(0);
+
+  const appVersion = Constants.expoConfig?.version ?? '-';
+
+  function handleVersionTap() {
+    tapCount.current += 1;
+    if (tapCount.current >= DEVTOOLS_TAP_COUNT) {
+      tapCount.current = 0;
+      router.push('/settings/devtools');
+    }
+  }
 
   return (
     <Box flex={1} bg="surface">
@@ -92,6 +107,13 @@ export default function SettingsScreen() {
             />
           </Card>
         </Box>
+
+        {/* 버전 — 숨김 제스처 진입점(개발도구) */}
+        <Pressable style={styles.version} onPress={handleVersionTap}>
+          <Typography variant="caption" color="textMuted">
+            {`v${appVersion}`}
+          </Typography>
+        </Pressable>
       </ScrollView>
 
       <ContactSheet visible={contactOpen} onClose={() => setContactOpen(false)} />
