@@ -2,8 +2,7 @@
 import { Modal, Pressable } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { Box } from './Box';
-import { Icon } from './Icon';
+import { RadioGroup } from './RadioGroup';
 import { Typography } from './Typography';
 
 type Option<T> = { key: T; label: string };
@@ -23,12 +22,6 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.radius.lg,
     padding: 20,
     gap: 8,
-  },
-  row: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    paddingVertical: 12,
   },
 }));
 
@@ -52,26 +45,14 @@ export function RadioDialog<T extends string | number>({
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.dialog} onPress={(e) => e.stopPropagation()}>
           <Typography variant="title">{title}</Typography>
-          <Box>
-            {options.map((o) => {
-              const selected = o.key === value;
-              return (
-                <Pressable
-                  key={String(o.key)}
-                  style={styles.row}
-                  onPress={() => {
-                    onSelect(o.key);
-                    onClose();
-                  }}>
-                  <Typography variant="body">{o.label}</Typography>
-                  <Icon
-                    name={selected ? 'radio-button-on' : 'radio-button-off'}
-                    color={selected ? 'primary' : 'textMuted'}
-                  />
-                </Pressable>
-              );
-            })}
-          </Box>
+          <RadioGroup
+            options={options}
+            value={value}
+            onChange={(k) => {
+              onSelect(k);
+              onClose();
+            }}
+          />
         </Pressable>
       </Pressable>
     </Modal>
