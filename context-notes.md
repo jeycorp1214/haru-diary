@@ -133,5 +133,14 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **변환됨** — LockScreen/LockGate를 tamagui(YStack/Text/Button) → RN + Unistyles StyleSheet. lab.tsx/tamagui.config.ts 삭제, tamagui deps 4개 제거.
 - **후속** — 나머지 화면(feed/calendar/stats/settings/entry/[id]/new/pin-setup/ScreenHeader)은 아직 평문 StyleSheet(하드코딩 색). Unistyles 테마로 점진 이전 예정. 현재는 plain StyleSheet와 Unistyles 공존.
 
+## 2026-06-09 — 공통 컴포넌트 시스템 (Phase A·B)
+
+- **설계 문서** — `components.md`. 레퍼런스(Lv1~3) 참고하되 앱 중복도 기준 우선순위(P0 Box/Typography/Button/Icon, P1 SegmentedControl⭐/Card/Chip/ListRow/Input/Header/Spinner, P2 보류).
+- **Phase A 토큰 확장** — `unistyles.ts`에 semantic colors(primary/onPrimary/primarySoft/surface/surfaceAlt/text/textMuted/textDisabled/border/danger/onDanger/placeholder + 하위호환 별칭 brand/background/card/inputBg) + named spacing(xs~xl) + radius.pill + 토큰 타입 export(ColorToken/SpacingToken/RadiusToken/FontSizeToken).
+- **⚠ 핵심 버그: `useUnistyles()` 훅 런타임 undefined** — Box/Typography에서 `const {theme}=useUnistyles()` → `TypeError: Cannot convert undefined value to object`(검은 화면+ErrorBoundary). **해결: Unistyles 3 정석인 `StyleSheet.create((theme)=>({ x:(args)=>({...}) }))` 동적함수 패턴으로 전환.** 훅 대신 동적 스타일 함수를 babel 플러그인이 처리해야 theme 주입됨. **raw 테마값**(아이콘 색·ActivityIndicator·victory Bar 색)이 필요하면 `styles.x(args).color`로 추출.
+- **검증** — 통계 화면을 Box/Typography로 재작성 → 기기 렌더 확인(스크린샷: primarySoft 카드 + primary "0일" + caption/label 토큰 적용).
+- **HMR 함정** — ErrorBoundary 상태에선 fast-refresh가 자식 재렌더 안 함. 컴포넌트 수정 후엔 **force-stop + cold start**로 풀 번들 재요청해야 반영(상태에 따라 "1 module" delta만 와서 안 바뀜).
+- **후속** — P0 나머지 적용(Button/Icon은 작성됨, 화면 적용은 Phase C/D). 다크/라이트 토글 일관성(Unistyles adaptiveThemes ↔ nav ThemeProvider)은 화면 이전 시 함께 검증.
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

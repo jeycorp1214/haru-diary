@@ -2,40 +2,61 @@
 // 수동 테마(useSettingsStore.themeMode)는 _layout에서 UnistylesRuntime로 동기화.
 import { StyleSheet } from 'react-native-unistyles';
 
-const sharedColors = {
-  brand: '#208AEF',
+// 색을 제외한 토큰은 테마 무관 → 공유.
+const space = (v: number) => v * 8;
+const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
+const radius = { sm: 8, md: 12, lg: 16, pill: 999 };
+const fontSize = { sm: 13, md: 16, lg: 20, xl: 28 };
+const shared = { space, spacing, radius, fontSize };
+
+const lightColors = {
+  // semantic
+  primary: '#208AEF',
+  onPrimary: '#ffffff',
+  primarySoft: '#208AEF14',
+  surface: '#ffffff',
+  surfaceAlt: '#fafafa',
+  text: '#111111',
+  textMuted: '#888888',
+  textDisabled: '#bbbbbb',
+  border: '#dddddd',
   danger: '#e0245e',
+  onDanger: '#ffffff',
+  placeholder: '#999999',
+  // 하위호환 별칭(LockScreen/LockGate 등 기존 사용)
+  brand: '#208AEF',
+  background: '#ffffff',
+  card: '#fafafa',
+  inputBg: '#7676801f',
 };
 
-const lightTheme = {
-  colors: {
-    ...sharedColors,
-    background: '#ffffff',
-    card: '#fafafa',
-    text: '#111111',
-    textMuted: '#888888',
-    border: '#dddddd',
-    inputBg: '#7676801f',
-  },
-  space: (v: number) => v * 8,
-  radius: { sm: 8, md: 12, lg: 16 },
-  fontSize: { sm: 13, md: 16, lg: 20, xl: 28 },
+const darkColors: typeof lightColors = {
+  primary: '#4A9EFF',
+  onPrimary: '#ffffff',
+  primarySoft: '#4A9EFF22',
+  surface: '#000000',
+  surfaceAlt: '#1a1a1a',
+  text: '#ffffff',
+  textMuted: '#aaaaaa',
+  textDisabled: '#555555',
+  border: '#444444',
+  danger: '#ff5a7a',
+  onDanger: '#ffffff',
+  placeholder: '#777777',
+  brand: '#4A9EFF',
+  background: '#000000',
+  card: '#1a1a1a',
+  inputBg: '#7676803f',
 };
 
-const darkTheme: typeof lightTheme = {
-  colors: {
-    ...sharedColors,
-    background: '#000000',
-    card: '#1a1a1a',
-    text: '#ffffff',
-    textMuted: '#aaaaaa',
-    border: '#444444',
-    inputBg: '#7676803f',
-  },
-  space: (v: number) => v * 8,
-  radius: { sm: 8, md: 12, lg: 16 },
-  fontSize: { sm: 13, md: 16, lg: 20, xl: 28 },
-};
+// 컴포넌트 props용 토큰 타입
+export type ColorToken = keyof typeof lightColors;
+export type SpacingToken = keyof typeof spacing;
+export type RadiusToken = keyof typeof radius;
+export type FontSizeToken = keyof typeof fontSize;
+
+const lightTheme = { colors: lightColors, ...shared };
+const darkTheme = { colors: darkColors, ...shared };
 
 const appThemes = { light: lightTheme, dark: darkTheme };
 
