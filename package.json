@@ -73,6 +73,8 @@
     "babel-plugin-inline-import": "^3.0.0",
     "better-sqlite3": "^12.10.0",
     "drizzle-kit": "^0.31.10",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~56.0.4",
     "jest-expo": "^56.0.4",
     "patch-package": "^8.0.1",
     "postinstall-postinstall": "^2.1.0",
