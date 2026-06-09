@@ -12,3 +12,4 @@ export { Input, type InputProps } from './Input';
 export { Switch } from './Switch';
 export { ToastHost } from './ToastHost';
 export { ConfirmHost } from './ConfirmHost';
+export { RadioDialog } from './RadioDialog';

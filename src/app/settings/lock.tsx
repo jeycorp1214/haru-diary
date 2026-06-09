@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { Box, SegmentedControl, Switch, Typography } from '@/components/ui';
+import { Box, Icon, ListRow, RadioDialog, Switch, Typography } from '@/components/ui';
 import { hasPIN } from '@/lib/auth/secureStorage';
 import { useBiometrics } from '@/lib/auth/useBiometrics';
 import { useLockStore } from '@/lib/auth/useLockStore';
@@ -21,6 +21,7 @@ export default function LockSettings() {
   const { t } = useTranslation();
   const router = useRouter();
   const [pinSet, setPinSet] = useState(false);
+  const [autoLockOpen, setAutoLockOpen] = useState(false);
   const { isAvailable, isEnrolled } = useBiometrics();
   const biometricUsable = isAvailable && isEnrolled;
   const isBiometricEnabled = useLockStore((s) => s.isBiometricEnabled);
@@ -43,6 +44,7 @@ export default function LockSettings() {
     key: String(m),
     label: m === 0 ? t('settings.lockImmediate') : t('settings.minutesShort', { count: m }),
   }));
+  const autoLockLabel = autoLockOptions.find((o) => o.key === String(autoLockMinutes))?.label ?? '';
 
   return (
     <Box flex={1} bg="surface">
@@ -60,11 +62,19 @@ export default function LockSettings() {
         )}
         {pinSet && (
           <>
-            <Typography variant="caption">{t('settings.autoLock')}</Typography>
-            <SegmentedControl
+            <ListRow
+              title={t('settings.autoLock')}
+              subtitle={autoLockLabel}
+              right={<Icon name="chevron-forward" color="textMuted" />}
+              onPress={() => setAutoLockOpen(true)}
+            />
+            <RadioDialog
+              visible={autoLockOpen}
+              title={t('settings.autoLock')}
               options={autoLockOptions}
               value={String(autoLockMinutes)}
-              onChange={(k) => setAutoLockMinutes(Number(k))}
+              onSelect={(k) => setAutoLockMinutes(Number(k))}
+              onClose={() => setAutoLockOpen(false)}
             />
           </>
         )}
