@@ -9,3 +9,6 @@ export { SegmentedControl } from './SegmentedControl';
 export { Chip } from './Chip';
 export { ListRow } from './ListRow';
 export { Input, type InputProps } from './Input';
+export { Switch } from './Switch';
+export { ToastHost } from './ToastHost';
+export { ConfirmHost } from './ConfirmHost';

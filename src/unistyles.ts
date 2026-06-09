@@ -22,6 +22,7 @@ const lightColors = {
   border: '#dddddd',
   danger: '#e0245e',
   onDanger: '#ffffff',
+  success: '#1aa86b',
   placeholder: '#999999',
   // 하위호환 별칭(LockScreen/LockGate 등 기존 사용)
   brand: '#208AEF',
@@ -42,6 +43,7 @@ const darkColors: typeof lightColors = {
   border: '#444444',
   danger: '#ff5a7a',
   onDanger: '#ffffff',
+  success: '#34c98a',
   placeholder: '#777777',
   brand: '#4A9EFF',
   background: '#000000',

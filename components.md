@@ -109,20 +109,30 @@
 - **대체** — `_layout`/`LockGate`의 `ActivityIndicator` 게이트
 - **props** — `size`, 전체화면 `fullscreen`(중앙+surface 배경).
 
-### P2 — 필요 시 (현재 미사용/Alert로 대체 중)
+### P2 — 피드백 레이어 (구현)
 
-#### `Switch`
-- **대체** — 설정 생체인증 토글(현재 Pressable 버튼). RN `Switch` 래퍼 + 테마 색.
+> 업계표준: Toast=imperative 싱글톤(sonner/burnt), Confirm=Promise(window.confirm형),
+> 미저장 이탈=navigation beforeRemove. 전부 루트에 Host 1개씩, 모든 화면 위에 표시.
 
-#### `Modal` / `BottomSheet`
-- **현황** — 현재 삭제확인·에러는 RN `Alert`로 충분. **즉시 불필요.**
-- **트리거 시** — 옵션시트/필터 등 새 기능 생기면 도입. 직접 만들지 말고 **`@gorhom/bottom-sheet`** 가져와 Unistyles 스킨만. (레퍼런스 권고)
+#### `Toast` — 임시 알림 (성공/실패/정보)
+- **API** — `toast.success(msg)` / `toast.error(msg)` / `toast.info(msg)`. **싱글톤이라 컴포넌트 밖에서도 호출**(mutation onSuccess/onError 등). 이벤트버스 + 루트 `<ToastHost/>`.
+- **동작** — 상단 safe-area, 자동 소멸(~3s), variant별 색·아이콘, 페이드 애니메이션. 스택.
+- **적용** — 저장 성공/실패, 삭제, import/export 결과(설정 Alert 대체).
 
-#### `Toast`
-- **현황** — 현재 `Alert`로 "가져왔습니다" 등 처리. **보류.** 필요 시 가벼운 전역 토스트 1개.
+#### `ConfirmDialog` — 확인 다이얼로그
+- **API** — `confirm({title,message,confirmLabel,destructive}) → Promise<boolean>`. async 핸들러에서 `if (await confirm(...))`. 루트 `<ConfirmHost/>` + 테마 RN Modal.
+- **적용** — 삭제 확인([id]), 미저장 이탈 확인(new), PIN 해제(설정) — RN `Alert.alert` 전부 대체.
 
-#### `Checkbox` / `Radio`
-- **현황** — 약관/다중선택 화면 없음. **불필요.** SegmentedControl이 라디오 역할 대신함.
+#### `useUnsavedGuard` — 작성 중 이탈 방지
+- `useNavigation().addListener('beforeRemove')` + `confirm()`. 본문 있는데 나가면 확인.
+- **적용** — entry/new(본문/제목/사진 등 있을 때).
+
+#### `Switch` — 토글
+- RN `Switch` + 테마 trackColor/thumbColor. **적용** — 설정 생체인증(현재 Button → Switch).
+
+#### 보류
+- **BottomSheet** — 옵션시트 유스케이스 생기면 `@gorhom/bottom-sheet` 스킨. 현재 없음.
+- **Checkbox/Radio** — 약관/다중선택 화면 없음. SegmentedControl이 라디오 대체.
 
 ---
 

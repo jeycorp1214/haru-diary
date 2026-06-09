@@ -4,15 +4,17 @@ import dayjs from 'dayjs';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, Text } from 'react-native';
+import { Pressable, ScrollView, Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Box, Typography } from '@/components/ui';
 import { deleteEntry, getEntry } from '@/db/queries/entries';
+import { confirm } from '@/lib/confirm';
 import { FONT_FAMILY } from '@/lib/fonts';
 import { invalidateEntryData } from '@/lib/query';
 import { queryKeys } from '@/lib/queryKeys';
+import { toast } from '@/lib/toast';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 
 const styles = StyleSheet.create((theme) => ({
@@ -39,15 +41,20 @@ export default function EntryDetailScreen() {
     mutationFn: () => Promise.resolve(deleteEntry(id)),
     onSuccess: () => {
       invalidateEntryData();
+      toast.success(t('entry.deleted'));
       router.back();
     },
   });
 
-  function confirmDelete() {
-    Alert.alert(t('entry.deleteConfirmTitle'), t('entry.deleteConfirmMsg'), [
-      { text: t('entry.cancel'), style: 'cancel' },
-      { text: t('entry.delete'), style: 'destructive', onPress: () => remove.mutate() },
-    ]);
+  async function confirmDelete() {
+    const ok = await confirm({
+      title: t('entry.deleteConfirmTitle'),
+      message: t('entry.deleteConfirmMsg'),
+      confirmLabel: t('entry.delete'),
+      cancelLabel: t('entry.cancel'),
+      destructive: true,
+    });
+    if (ok) remove.mutate();
   }
 
   if (isLoading) return null;

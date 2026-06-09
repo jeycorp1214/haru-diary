@@ -88,7 +88,8 @@
   - [ ] Phase A — 토큰 확장(semantic colors/spacing/typography variants/radius pill)
   - [ ] Phase B — P0: Box / Typography / Button / Icon
   - [x] Phase C — P1: SegmentedControl/Card/Chip/ListRow/Input/Header토큰화/Spinner
-  - [x] Phase D — 화면 이전(설정/피드/캘린더/통계/상세/작성/pin-setup). 다크모드 기기 검증(피드/통계 스크린샷). P2(Switch/Modal/Toast)는 보류
+  - [x] Phase D — 화면 이전(설정/피드/캘린더/통계/상세/작성/pin-setup). 다크모드 기기 검증(피드/통계 스크린샷)
+  - [x] Phase E — 피드백 레이어: Toast(싱글톤)/ConfirmDialog(Promise)/Switch + useUnsavedGuard(작성 이탈). Alert 전부 대체. 부팅 검증, 인터랙션은 수동
 
 ## 추가 기능 (설계 외 요청)
 

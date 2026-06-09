@@ -8,6 +8,7 @@ import { Icon, type IconName } from './Icon';
 
 type Variant = 'solid' | 'outline' | 'text';
 type Size = 'sm' | 'md' | 'lg';
+type Tone = 'primary' | 'danger';
 
 const SIZES: Record<Size, { py: number; px: number; fontSize: number; icon: number }> = {
   sm: { py: 8, px: 14, fontSize: 14, icon: 16 },
@@ -18,6 +19,7 @@ const SIZES: Record<Size, { py: number; px: number; fontSize: number; icon: numb
 export interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
   variant?: Variant;
   size?: Size;
+  tone?: Tone;
   loading?: boolean;
   disabled?: boolean;
   leftIcon?: IconName;
@@ -26,8 +28,9 @@ export interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> 
 }
 
 const styles = StyleSheet.create((theme) => ({
-  base: (variant: Variant, size: Size, isDisabled: boolean) => {
+  base: (variant: Variant, size: Size, tone: Tone, isDisabled: boolean) => {
     const s = SIZES[size];
+    const accent = tone === 'danger' ? theme.colors.danger : theme.colors.primary;
     return {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
@@ -36,29 +39,35 @@ const styles = StyleSheet.create((theme) => ({
       paddingVertical: s.py,
       paddingHorizontal: s.px,
       borderRadius: theme.radius.md,
-      backgroundColor: variant === 'solid' ? theme.colors.primary : 'transparent',
+      backgroundColor: variant === 'solid' ? accent : 'transparent',
       borderWidth: variant === 'outline' ? 1 : 0,
-      borderColor: theme.colors.primary,
+      borderColor: accent,
       opacity: isDisabled ? 0.5 : 1,
     };
   },
-  fg: (variant: Variant, size: Size) => ({
-    color: variant === 'solid' ? theme.colors.onPrimary : theme.colors.primary,
+  fg: (variant: Variant, size: Size, tone: Tone) => ({
+    color:
+      variant === 'solid'
+        ? theme.colors.onPrimary
+        : tone === 'danger'
+          ? theme.colors.danger
+          : theme.colors.primary,
     fontSize: SIZES[size].fontSize,
     fontWeight: '600' as const,
   }),
 }));
 
 export const Button = forwardRef<View, ButtonProps>(function Button(
-  { variant = 'solid', size = 'md', loading, disabled, leftIcon, rightIcon, children, ...rest },
+  { variant = 'solid', size = 'md', tone = 'primary', loading, disabled, leftIcon, rightIcon, children, ...rest },
   ref,
 ) {
   const isDisabled = !!(disabled || loading);
-  const fgToken: ColorToken = variant === 'solid' ? 'onPrimary' : 'primary';
-  const fgStyle = styles.fg(variant, size);
+  const fgToken: ColorToken =
+    variant === 'solid' ? 'onPrimary' : tone === 'danger' ? 'danger' : 'primary';
+  const fgStyle = styles.fg(variant, size, tone);
 
   return (
-    <Pressable ref={ref} disabled={isDisabled} style={styles.base(variant, size, isDisabled)} {...rest}>
+    <Pressable ref={ref} disabled={isDisabled} style={styles.base(variant, size, tone, isDisabled)} {...rest}>
       {loading ? (
         <ActivityIndicator color={fgStyle.color} size="small" />
       ) : (

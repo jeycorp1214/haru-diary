@@ -13,6 +13,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { CriticalErrorScreen } from '@/components/auth/CriticalErrorScreen';
 import { LockGate } from '@/components/auth/LockGate';
+import { ConfirmHost, ToastHost } from '@/components/ui';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { bootstrapFts, db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
@@ -73,6 +74,8 @@ export default function RootLayout() {
                   <Stack key={fontFamily} screenOptions={{ headerShown: false }} />
                 </LockGate>
               )}
+              <ToastHost />
+              <ConfirmHost />
             </ThemeProvider>
           </QueryClientProvider>
       </GestureHandlerRootView>

@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
@@ -16,6 +16,8 @@ import { createEntry } from '@/db/queries/entries';
 import { MOOD_SEED } from '@/db/seed';
 import { persistPhoto } from '@/lib/db-photo';
 import { invalidateEntryData } from '@/lib/query';
+import { toast } from '@/lib/toast';
+import { useUnsavedGuard } from '@/lib/useUnsavedGuard';
 import { useSpeechToText } from '@/lib/voice/useSpeechToText';
 import { getAutoTag, type AutoTag } from '@/lib/weather/autoTag';
 
@@ -77,6 +79,24 @@ export default function NewEntryScreen() {
 
   const editor = useEditorBridge({ autofocus: false, avoidIosKeyboard: true });
   const editorText = useEditorContent(editor, { type: 'text' });
+  const submittedRef = useRef(false);
+
+  // 작성 중 이탈 가드 — 내용 있고 저장 전이면 확인
+  useUnsavedGuard(
+    () =>
+      !submittedRef.current &&
+      (title.trim().length > 0 ||
+        tags.length > 0 ||
+        photos.length > 0 ||
+        (editorText?.trim().length ?? 0) > 0),
+    {
+      title: t('entry.unsavedTitle'),
+      message: t('entry.unsavedMsg'),
+      confirmLabel: t('entry.discard'),
+      cancelLabel: t('entry.keepEditing'),
+      destructive: true,
+    },
+  );
 
   const stt = useSpeechToText(async (text) => {
     const html = await editor.getHTML();
@@ -136,9 +156,12 @@ export default function NewEntryScreen() {
       });
     },
     onSuccess: () => {
+      submittedRef.current = true;
       invalidateEntryData();
+      toast.success(t('entry.saved'));
       router.back();
     },
+    onError: () => toast.error(t('entry.saveFailed')),
   });
 
   const canSave = (editorText?.trim().length ?? 0) > 0 && !save.isPending;

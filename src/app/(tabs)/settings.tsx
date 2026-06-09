@@ -2,14 +2,16 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, ScrollView, Text } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { useQueryClient } from '@tanstack/react-query';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { DriveBackupButton } from '@/components/DriveBackupButton';
-import { Box, Button, Card, SegmentedControl, Typography } from '@/components/ui';
+import { Box, Button, Card, SegmentedControl, Switch, Typography } from '@/components/ui';
+import { confirm } from '@/lib/confirm';
+import { toast } from '@/lib/toast';
 import { deletePIN, hasPIN } from '@/lib/auth/secureStorage';
 import { useBiometrics } from '@/lib/auth/useBiometrics';
 import { useLockStore } from '@/lib/auth/useLockStore';
@@ -67,22 +69,22 @@ export default function SettingsScreen() {
     }, []),
   );
 
-  function toggleLock() {
-    if (pinSet) {
-      Alert.alert(t('settings.removePinTitle'), t('settings.removePinMsg'), [
-        { text: t('entry.cancel'), style: 'cancel' },
-        {
-          text: t('settings.remove'),
-          style: 'destructive',
-          onPress: async () => {
-            await deletePIN();
-            setBiometricEnabled(false);
-            setPinSet(false);
-          },
-        },
-      ]);
-    } else {
+  async function toggleLock() {
+    if (!pinSet) {
       router.push('/pin-setup');
+      return;
+    }
+    const ok = await confirm({
+      title: t('settings.removePinTitle'),
+      message: t('settings.removePinMsg'),
+      confirmLabel: t('settings.remove'),
+      cancelLabel: t('entry.cancel'),
+      destructive: true,
+    });
+    if (ok) {
+      await deletePIN();
+      setBiometricEnabled(false);
+      setPinSet(false);
     }
   }
 
@@ -94,7 +96,7 @@ export default function SettingsScreen() {
     }
     const ok = await ensureNotificationPermission();
     if (!ok) {
-      Alert.alert('알림 권한 필요', '설정에서 알림을 허용해 주세요.');
+      toast.error(t('settings.notifyPermission'));
       return;
     }
     const [h, m] = time.split(':').map(Number);
@@ -110,8 +112,8 @@ export default function SettingsScreen() {
   async function handleExport() {
     try {
       await exportEntriesJson();
-    } catch (e) {
-      Alert.alert('내보내기 실패', String(e));
+    } catch {
+      toast.error(t('settings.exportFailed'));
     }
   }
 
@@ -120,9 +122,9 @@ export default function SettingsScreen() {
       const n = await importEntriesJson();
       if (n === null) return;
       queryClient.invalidateQueries();
-      Alert.alert('', t('settings.importDone', { count: n }));
-    } catch (e) {
-      Alert.alert('가져오기 실패', String(e));
+      toast.success(t('settings.importDone', { count: n }));
+    } catch {
+      toast.error(t('settings.importFailed'));
     }
   }
 
@@ -187,11 +189,10 @@ export default function SettingsScreen() {
           {pinSet ? t('settings.lockOnRemove') : t('settings.lockSet')}
         </Button>
         {pinSet && biometricUsable && (
-          <Button
-            variant={isBiometricEnabled ? 'solid' : 'outline'}
-            onPress={() => setBiometricEnabled(!isBiometricEnabled)}>
-            {`${t('settings.biometric')}${isBiometricEnabled ? ' ✓' : ''}`}
-          </Button>
+          <Box row align="center" justify="space-between" py="xs">
+            <Typography variant="body">{t('settings.biometric')}</Typography>
+            <Switch value={isBiometricEnabled} onValueChange={setBiometricEnabled} />
+          </Box>
         )}
         {pinSet && (
           <>
@@ -214,7 +215,7 @@ export default function SettingsScreen() {
         {isDriveConfigured ? (
           <DriveBackupButton />
         ) : (
-          <Button variant="outline" onPress={() => Alert.alert('', t('settings.cloudUnconfigured'))}>
+          <Button variant="outline" onPress={() => toast.info(t('settings.cloudUnconfigured'))}>
             {t('settings.cloudBackup')}
           </Button>
         )}
