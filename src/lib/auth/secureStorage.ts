@@ -1,7 +1,10 @@
-// PIN 보안 저장 + 잠금 시도횟수/만료 관리. PIN은 pbkdf2 파생키만 SecureStore에 저장(평문 미저장).
-// crypto.subtle은 Expo 런타임에 없음 — 난수는 expo-crypto, 해시·KDF는 순수 JS @noble/hashes(v2).
-import { pbkdf2Async } from '@noble/hashes/pbkdf2.js';
+// PIN 보안 저장 + 잠금 시도횟수/만료 관리. PIN 해시(salt+sha256)만 SecureStore에 저장(평문 미저장).
+// PIN = UI 게이트용 단방향 해시. 온라인 추측은 5회 1분 잠금으로 제한.
+// 느린 KDF(오프라인 대입 방어) 제거: 일기 본문이 평문 SQLite라 무의미했음.
+// 암호화 MMKV 키는 PIN 파생이 아닌 랜덤키(Keychain 보관) → unlock 즉시, 4자리 PIN보다 강함.
+// crypto.subtle은 Expo 런타임에 없음 — 난수는 expo-crypto, 해시는 순수 JS @noble/hashes(v2).
 import { sha256 } from '@noble/hashes/sha2.js';
+import { utf8ToBytes } from '@noble/hashes/utils.js';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
@@ -23,27 +26,19 @@ function toHex(bytes: Uint8Array): string {
     .join('');
 }
 
-function fromHex(hex: string): Uint8Array {
-  return Uint8Array.from(hex.match(/.{2}/g)!.map((h) => parseInt(h, 16)));
-}
-
-// PIN + 사용자별 랜덤 salt로 pbkdf2 파생 (SHA-256, 100k 라운드)
-async function derivePIN(pin: string, salt: Uint8Array): Promise<string> {
-  const key = await pbkdf2Async(sha256, pin, salt, { c: 100_000, dkLen: 32 });
-  return toHex(key);
+// 게이트 검증용 단방향 해시 — salt + PIN, sha256 1회(즉시).
+function hashPIN(pin: string, saltHex: string): string {
+  return toHex(sha256(utf8ToBytes(`${saltHex}:${pin}`)));
 }
 
 export async function savePIN(pin: string) {
-  const salt = Crypto.getRandomBytes(16);
-  const hash = await derivePIN(pin, salt);
-  await SecureStore.setItemAsync(PIN_SALT_KEY, toHex(salt));
-  await SecureStore.setItemAsync(PIN_HASH_KEY, hash);
+  const saltHex = toHex(Crypto.getRandomBytes(16));
+  await SecureStore.setItemAsync(PIN_SALT_KEY, saltHex);
+  await SecureStore.setItemAsync(PIN_HASH_KEY, hashPIN(pin, saltHex));
 
-  // E2E: 검증 해시와 별도 salt로 암호화 MMKV 키 파생. 16B → hex 32자(AES-256 32B 한도 충족).
-  const encSalt = Crypto.getRandomBytes(16);
-  const encKey = await pbkdf2Async(sha256, pin, encSalt, { c: 100_000, dkLen: 16 });
-  await SecureStore.setItemAsync(ENC_SALT_KEY, toHex(encSalt));
-  await SecureStore.setItemAsync(ENC_KEY_KEY, toHex(encKey));
+  // 암호화 MMKV 키 — PIN 파생 아님. 랜덤 16B → hex 32자(AES-256). Keychain 보관, unlock 시 로드.
+  const encKey = toHex(Crypto.getRandomBytes(16));
+  await SecureStore.setItemAsync(ENC_KEY_KEY, encKey);
 }
 
 // 암호화 MMKV용 키 반환(hex 32자). PIN 미설정이면 null.
@@ -55,8 +50,7 @@ export async function verifyPIN(pin: string): Promise<boolean> {
   const storedHash = await SecureStore.getItemAsync(PIN_HASH_KEY);
   const storedSalt = await SecureStore.getItemAsync(PIN_SALT_KEY);
   if (!storedHash || !storedSalt) return false;
-  const hash = await derivePIN(pin, fromHex(storedSalt));
-  return hash === storedHash;
+  return hashPIN(pin, storedSalt) === storedHash;
 }
 
 export async function hasPIN(): Promise<boolean> {
