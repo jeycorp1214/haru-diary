@@ -159,5 +159,14 @@ queries 수정·재빌드·설치 후에도 음성 입력 탭 시 여전히 "음
 - **UUID 카운터 mock** — `expo-crypto.randomUUID`를 `id-${++n}`로(고정값이면 PK 충돌). db-photo는 expo-file-system 의존 → `deletePhotoFile` no-op mock.
 - **devDep** — `better-sqlite3` + `@types/better-sqlite3`. FTS5 기본 컴파일 포함(검증함).
 
+## 2026-06-09 — 글자 스타일 실기기 검증 (emulator-5554)
+
+- **globalFont 라이브 반영 확인** — 설정에서 손글씨 선택 → 화면 전체 텍스트(제목/섹션라벨/버튼/탭바/프리뷰)가 즉시 Gaegu 손글씨체로 전환. JSX 런타임 패치(jsx/jsxs/jsxDEV) + subtree remount 정상 동작.
+- **명시 fontFamily 우선 유지 확인** — 글꼴 버튼 "고딕/명조"는 각자 자기 폰트(`FONT_FAMILY[o.key]`)로 렌더, 전역 손글씨에 안 먹힘. globalFont의 "명시 fontFamily는 우선 유지" 로직 정상.
+- **fontScale 라이브** — 아주 크게(1.3) 선택 시 프리뷰 텍스트 즉시 확대.
+- **잠금화면 폰트** — LockScreen "일기 잠금" 제목·PIN 오류 메시지 손글씨 + danger 색 렌더. PIN 오입력 시 시도횟수 카운트("남은 시도 2회") 영속 동작 확인([[2026-06-09 보안 보강]] 검증).
+- **⚠ 검증 위해 앱 데이터 clear함** — 이전 세션 PIN 미상 + 시도 2회 남아 브루트포스 위험 → `adb shell pm clear`로 초기화(사용자 승인). PIN/일기/설정 전부 리셋. 데이터 없는 상태에서 자동언락(LockGate hasPIN false) 정상.
+- **미검증** — 상세 본문 적용(일기 0건이라 생략). 코드 배선은 확인됨(globalFont 전역 + entry/[id] fontScale). tentap 에디터 내부는 webview라 globalFont 미적용(설계상 별도).
+
 ## Tamagui style prop 결정 (위 참조)
 런타임/번들은 통과(iOS export OK). **결정(2026-06-09): style prop 방식 확정.** tamagui 2.1.0이 이미 최신(peer react>=19)이라 업그레이드 타깃 없음 — 버전 문제 아닌 라이브러리 타입 한계. 컨벤션: **레이아웃(flex/align/justify/gap/padding) = `style={{}}`(RN 타입), 색·폰트·컴포넌트 = Tamagui 토큰/컴포넌트.** 런타임 안전, 추가 설치 0.

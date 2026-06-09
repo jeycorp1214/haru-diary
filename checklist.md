@@ -95,7 +95,7 @@
 
 - [x] 설정: 화면 잠금 — PIN 설정/해제(pin-setup 모달) + 생체 토글 + 자동잠금 시간
 - [x] 설정: 글자 스타일 — 크기 4단계 + 글꼴 4종(기본/고딕/명조/손글씨, 한글 Google Fonts) + 라이브 프리뷰. 상세 본문에 적용
-  - [ ] 실기기 육안 검증(폰트 렌더·잠금 플로우) — metro 리로드로 확인 필요(네이티브 재빌드 불필요)
+  - [x] 실기기 육안 검증(emulator-5554): 잠금화면 손글씨 렌더 + PIN 오입력 시도횟수 카운트 동작 / 설정 글꼴 4종 버튼 자기폰트 렌더 / 손글씨 선택 시 전역 라이브 반영(제목·라벨·버튼·탭바·프리뷰) / 아주크게 크기 스케일. 상세 본문 적용은 코드 배선 확인(globalFont 전역 패치 + fontScale)
 - [x] E2E 암호화 (PIN 파생키 MMKV)
   - [x] secureStorage: PIN에서 별도 salt로 암호키 파생 → SecureStore 영속 (auth 해시와 분리)
   - [x] secureMmkv: PIN 파생키로 암호화 MMKV(`secure`) 인스턴스 lifecycle (unlock/get/lock)
