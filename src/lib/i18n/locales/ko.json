@@ -1,5 +1,10 @@
 {
-  "tabs": { "feed": "일기", "calendar": "캘린더", "stats": "통계", "settings": "설정" },
+  "tabs": {
+    "feed": "일기",
+    "calendar": "캘린더",
+    "stats": "통계",
+    "settings": "설정"
+  },
   "feed": {
     "untitled": "제목 없음",
     "empty": "아직 일기가 없습니다. 첫 일기를 써보세요.",
@@ -79,7 +84,19 @@
     "minutesShort": "{{count}}분",
     "removePinTitle": "화면 잠금 끄기",
     "removePinMsg": "PIN을 삭제하고 잠금을 해제할까요?",
-    "remove": "삭제"
+    "remove": "삭제",
+    "groupSecurity": "보안",
+    "groupNotify": "알림",
+    "groupDisplay": "화면 표시",
+    "groupGeneral": "일반",
+    "groupData": "데이터",
+    "backupRestore": "백업 / 복원",
+    "lockDesc": "PIN · 생체 인증 · 자동 잠금",
+    "reminderDesc": "매일 작성 알림 시각",
+    "themeDesc": "시스템 · 라이트 · 다크",
+    "fontDesc": "크기 · 글꼴",
+    "languageDesc": "한국어 · English",
+    "backupDesc": "내보내기 · 가져오기 · Drive"
   },
   "lockSetup": {
     "title": "PIN 설정",
@@ -87,8 +104,13 @@
     "confirm": "확인을 위해 다시 입력하세요",
     "mismatch": "PIN이 일치하지 않습니다. 다시 시도하세요."
   },
-  "notification": { "title": "오늘의 일기", "body": "오늘 하루를 기록해보세요." },
-  "common": { "comingSoon": "준비 중" },
+  "notification": {
+    "title": "오늘의 일기",
+    "body": "오늘 하루를 기록해보세요."
+  },
+  "common": {
+    "comingSoon": "준비 중"
+  },
   "stats": {
     "distribution": "감정 분포",
     "empty": "통계를 표시할 일기가 없습니다.",
@@ -96,5 +118,11 @@
     "streakDays": "{{count}}일",
     "noEntries": "아직 일기가 없습니다."
   },
-  "mood": { "great": "최고", "good": "좋음", "meh": "보통", "bad": "별로", "awful": "최악" }
+  "mood": {
+    "great": "최고",
+    "good": "좋음",
+    "meh": "보통",
+    "bad": "별로",
+    "awful": "최악"
+  }
 }

@@ -1,5 +1,10 @@
 {
-  "tabs": { "feed": "Journal", "calendar": "Calendar", "stats": "Stats", "settings": "Settings" },
+  "tabs": {
+    "feed": "Journal",
+    "calendar": "Calendar",
+    "stats": "Stats",
+    "settings": "Settings"
+  },
   "feed": {
     "untitled": "Untitled",
     "empty": "No entries yet. Write your first one.",
@@ -79,7 +84,19 @@
     "minutesShort": "{{count}}m",
     "removePinTitle": "Disable screen lock",
     "removePinMsg": "Remove the PIN and disable the lock?",
-    "remove": "Remove"
+    "remove": "Remove",
+    "groupSecurity": "Security",
+    "groupNotify": "Notifications",
+    "groupDisplay": "Display",
+    "groupGeneral": "General",
+    "groupData": "Data",
+    "backupRestore": "Backup / Restore",
+    "lockDesc": "PIN · Biometrics · Auto-lock",
+    "reminderDesc": "Daily reminder time",
+    "themeDesc": "System · Light · Dark",
+    "fontDesc": "Size · Font",
+    "languageDesc": "한국어 · English",
+    "backupDesc": "Export · Import · Drive"
   },
   "lockSetup": {
     "title": "Set PIN",
@@ -87,8 +104,13 @@
     "confirm": "Re-enter to confirm",
     "mismatch": "PINs do not match. Try again."
   },
-  "notification": { "title": "Today's journal", "body": "Take a moment to write today." },
-  "common": { "comingSoon": "Coming soon" },
+  "notification": {
+    "title": "Today's journal",
+    "body": "Take a moment to write today."
+  },
+  "common": {
+    "comingSoon": "Coming soon"
+  },
   "stats": {
     "distribution": "Mood distribution",
     "empty": "No entries to show stats.",
@@ -96,5 +118,11 @@
     "streakDays": "{{count}} days",
     "noEntries": "No entries yet."
   },
-  "mood": { "great": "Great", "good": "Good", "meh": "Meh", "bad": "Bad", "awful": "Awful" }
+  "mood": {
+    "great": "Great",
+    "good": "Good",
+    "meh": "Meh",
+    "bad": "Bad",
+    "awful": "Awful"
+  }
 }
